@@ -56,23 +56,23 @@ class Overlay {
 
 		
 		document.getElementById('bugButtons').innerHTML = `
-		<div id="🐝Button" onClick="Grid.instance.focusBug('🐝')" class="bugButton ${ !addableBugs.has('🐝') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐝' ? 'selected' : ''}" ${bugsOwned['🐝'] == 1 ? 'style:display:none;' : ''} >
+		<div id="🐝Button" onClick="Grid.instance.focusBug('🐝')" class="bugButton ${ !addableBugs.has('🐝') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐝' ? 'selected' : ''}" ${bugsOwned['🐝'] == 0 ? 'style="display:none;"' : ''} >
             <div id="🐝Amount" class="numBugs ${ !addableBugs.has('🐝') ? 'hiddenBug' : ''}">${bugsOwned['🐝']}</div>
             <div class="bug ${ !addableBugs.has('🐝') ? 'hiddenBug' : ''}">🐝</div>
         </div>
-        <div id="🕷Button" onClick="Grid.instance.focusBug('🕷')" class="bugButton ${ !addableBugs.has('🕷') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🕷' ? 'selected' : ''}" ${bugsOwned['🕷'] == 0 ? 'style:display:none;' : ''}>
+        <div id="🕷Button" onClick="Grid.instance.focusBug('🕷')" class="bugButton ${ !addableBugs.has('🕷') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🕷' ? 'selected' : ''}" ${bugsOwned['🕷'] == 0 ? 'style="display:none;"' : ''}>
             <div id="🕷Amount" class="numBugs ${ !addableBugs.has('🕷') ? 'hiddenBug' : ''}">${bugsOwned['🕷']}</div>
-            <div class="bug ${ !addableBugs.has('🕷') ? 'hiddenBug' : ''}">🕷</div>
+            <div class="bug ${ !addableBugs.has('🕷') ? 'hiddenBug' : ''}">🕷️</div>
         </div>
-        <div id="🐜Button" onClick="Grid.instance.focusBug('🐜')" class="bugButton ${ !addableBugs.has('🐜') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐜' ? 'selected' : ''}" ${bugsOwned['🐜'] == 0 ? 'style:display:none;' : ''}>
+        <div id="🐜Button" onClick="Grid.instance.focusBug('🐜')" class="bugButton ${ !addableBugs.has('🐜') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐜' ? 'selected' : ''}" ${bugsOwned['🐜'] == 0 ? 'style="display:none;"' : ''}>
             <div id="🐜Amount" class="numBugs ${ !addableBugs.has('🐜') ? 'hiddenBug' : ''}">${bugsOwned['🐜']}</div>
             <div class="bug ${ !addableBugs.has('🐜') ? 'hiddenBug' : ''}">🐜</div>
             </div>
-        <div id="🐞Button" onClick="Grid.instance.focusBug('🐞')" class="bugButton ${ !addableBugs.has('🐞') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐞' ? 'selected' : ''}" ${bugsOwned['🐞'] == 0 ? 'style:display:none;' : ''}>
+        <div id="🐞Button" onClick="Grid.instance.focusBug('🐞')" class="bugButton ${ !addableBugs.has('🐞') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐞' ? 'selected' : ''}" ${bugsOwned['🐞'] == 0 ? 'style="display:none;"' : ''}>
             <div id="🐞Amount" class="numBugs ${ !addableBugs.has('🐞') ? 'hiddenBug' : ''}">${bugsOwned['🐞']}</div>
             <div class="bug ${ !addableBugs.has('🐞') ? 'hiddenBug' : ''}">🐞</div>
             </div>
-        <div id="🦗Button" onClick="Grid.instance.focusBug('🦗')" class="bugButton ${ !addableBugs.has('🦗') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🦗' ? 'selected' : ''}" ${bugsOwned['🦗'] == 0 ? 'style:display:none;' : ''}>
+        <div id="🦗Button" onClick="Grid.instance.focusBug('🦗')" class="bugButton ${ !addableBugs.has('🦗') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🦗' ? 'selected' : ''}" ${bugsOwned['🦗'] == 0 ? 'style="display:none;"' : ''}>
             <div id="🦗Amount" class="numBugs ${ !addableBugs.has('🦗') ? 'hiddenBug' : ''}">${bugsOwned['🦗']}</div>
             <div class="bug ${ !addableBugs.has('🦗') ? 'hiddenBug' : ''}">🦗</div>
         </div>
@@ -94,7 +94,7 @@ class Grid {
 				this.hexes.push({x:c,y:-r})
 			}
 		}
-		this.render();
+		requestAnimationFrame(()=>{this.render()});
 	}
 
 	focusBug(bug) {
@@ -108,7 +108,7 @@ class Grid {
 
 		Overlay.applyGameState(this.state, this.focusedBug);
 
-		this.render();
+		requestAnimationFrame(()=>{this.render()});
 	}
 
 	applyNewGameState(state) {
@@ -116,6 +116,8 @@ class Grid {
 		this.focusedBug = undefined;
 		this.hexes = state.hexes;
 		Overlay.applyGameState(state, this.focusedBug);
+
+		requestAnimationFrame(()=>{this.render()});
 
 	}
 
@@ -177,6 +179,9 @@ class Grid {
 				}
 			}
 		}
+
+		canvas.ctx.font = `${hexSize * camera.zoom}px serif`;
+		const iconOffset = hexSize * camera.zoom;
 		
 
 		const drawHexLine = (hex, focused) => {
@@ -207,14 +212,24 @@ class Grid {
 					break;
 				}
 			}
+		
+
 			if(highlight) {
 				canvas.ctx.strokeStyle = focused ? 'purple' : "blue";
 				canvas.ctx.lineWidth = 3;
-				canvas.ctx.fill();
+				// canvas.ctx.fill();
 			}
 
 
 			canvas.ctx.stroke();
+
+			if(hex.bugs && hex.bugs.length) {
+				const bugData = hex.bugs[hex.bugs.length-1];
+				const bug = (bugData.bug == '🕷') ? '🕷️' : bugData.bug;
+				canvas.ctx.fillStyle = `#${bugData.owner}`;
+				canvas.ctx.fill();
+				canvas.ctx.fillText(bug, hex.centroid.x - iconOffset/1.5 , hex.centroid.y + iconOffset/2.5)
+			}
 		}
 
 		for(let b = 0; b < this.hexes.length; b++) {

@@ -6,7 +6,7 @@ Hex {
 	x: column number
 	y: row number
 
-	bugs: [stack of bugs]
+	bug: [stack of bugs]
 }
 
 Bug {
@@ -80,11 +80,54 @@ class Game {
 
 	// Active player moves one bug to another position.
 	generateBugMoves() {
-
+		let moves = [];
+		return moves;
 	}
 
 	// Active player adds a new bug to the game.
 	generateBugAdds(playableBugs) {
+		
+		let moves= [];
+		forEach(this.hexes, (hex) => {
+			if(hex.bugs.length != 0) {
+				return;
+			}
+
+			let bordersPlayer = false;
+			let bordersOpponent = false;
+			Hex.checkNeighborCondition(this.hexes, hex, (neighboring) => {
+				if(!neighboring.bugs.length) {
+					return;
+				}
+				console.log("checking hex with neighbors, ", neighboring)
+				const topBug = neighboring.bugs[neighboring.bugs.length-1];
+				const isPlayerBug = topBug.owner == this.activePlayer;
+				if(!isPlayerBug) {
+					bordersOpponent = true;
+					return true; //return early
+				}
+				bordersPlayer = true;
+			});
+			console.log({bordersPlayer,bordersOpponent})
+
+			if(bordersPlayer && !bordersOpponent) {
+				forEach(playableBugs, (bug)=>{
+					
+					moves.push({
+						bug: bug,
+						type: 'add',
+						to: hex,
+						player: this.activePlayer
+					})
+				
+					
+				})
+			}
+
+			
+		})
+		
+		return moves;
 
 	}
 
@@ -113,17 +156,18 @@ class Game {
 						hexesWithBugs.push(hex);
 					}
 				})
+				console.log("hexesWithBugs:");
+				console.log(hexesWithBugs);
 
 				let emptyNeighbors = [];
 				forEach(this.hexes, (hex) => {
 					forEach(hexesWithBugs, (bugHex) => {
-						//todo, this neighbors function isnt implemented yet
 						if(Hex.neighbors(hex, bugHex)) {
 							forEach(bugs, (bug)=>{
 								moves.push({
 									bug: bug,
 									type: 'add',
-									to: {x:0, y:0},
+									to: hex,
 									player: this.activePlayer
 								})
 							})
@@ -153,9 +197,9 @@ class Game {
 			}
 
 			if(queenPlayed) {
-				moves.concat(this.generateBugMoves());
+				moves = moves.concat(this.generateBugMoves());
 			}
-			moves.concat(this.generateBugAdds(playableBugs))
+			moves = moves.concat(this.generateBugAdds(playableBugs))
 
 
 		}
@@ -183,9 +227,36 @@ class Game {
 		return true;
 	}
 
+	ensureNeighborsExist(hex) {
+		const neighborCoords = Hex.generateNeighborCoords(hex);
+		forEach(neighborCoords, (coord) => {
+			if(!Hex.in(this.hexes, coord)) {
+				this.hexes.push({x:coord.x, y: coord.y, bugs: []})
+			}
+		})
+	}
+
 	applyNextMove(move) {
 		if(this.validateNextMove(move)) {
 			//todo - actually apply the move
+			console.log('move is gonna be');
+			console.log(move);
+			if(move.type == 'add') {
+				let targetHex = Hex.find(this.hexes, move.to);
+				if(!targetHex) {
+					console.log("whoa, this should not happen yikes");
+					return;
+					
+				}
+				targetHex.bugs.push({bug: move.bug, owner: this.activePlayer});
+
+				this.bugs[this.activePlayer][move.bug]--;
+
+				this.ensureNeighborsExist(targetHex);
+			}
+
+
+
 			this.nextTurn();
 		}
 		

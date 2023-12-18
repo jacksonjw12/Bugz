@@ -1,4 +1,4 @@
-
+let socket;
 const camera = {
 	centerPoint: {x: 0, y: 0},
 	zoom: 1
@@ -91,5 +91,49 @@ window.onload = function(){
 	document.addEventListener("touchstart", onTouch);
 	document.addEventListener("touchend", onTouch);
 
+
+
+
+	socket = io();
+	socket.on('state', function(newState) {
+		console.log({newState});
+		updateState(newState);
+	});
+
+	let blurManualRequestInterval = 5000;
+	let blurLoop = undefined;
+
+	window.addEventListener("blur", function(event) { 
+	   blurLoop = window.setInterval(()=> {socket.emit('getState')}, blurManualRequestInterval)
+	}, false);
+
+	window.addEventListener("focus", function(event) { 
+		window.clearInterval(blurLoop);
+   		socket.emit('getState');
+	}, false);
+
+	 
+
+
 	
 }
+
+
+ function newGame() {
+    console.log('new game')
+    socket.emit('newGame');
+  }
+
+  function joinWithCode() {
+    socket.emit('joinGame', {code: document.getElementById('joinGameCode').value})
+  }
+
+  function submitMove(move) {
+    socket.emit('submitMove', move)
+
+  }
+
+  function startGame() {
+    socket.emit('startGame');
+
+  }

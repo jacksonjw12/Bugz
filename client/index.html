@@ -104,31 +104,7 @@
 
 
 
-  var socket = io();
-  socket.on('state', function(newState) {
-   console.log({newState});
-   updateState(newState);
-  });
-
-  function newGame() {
-    console.log('new game')
-    socket.emit('newGame');
-  }
-
-  function joinWithCode() {
-    socket.emit('joinGame', {code: document.getElementById('joinGameCode').value})
-  }
-
-  function submitMove(move) {
-    socket.emit('submitMove', move)
-
-  }
-
-  function startGame() {
-    socket.emit('startGame');
-
-  }
-
+  
   </script>
 
     <script src="utils.js"></script>
