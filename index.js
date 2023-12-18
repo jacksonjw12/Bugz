@@ -66,6 +66,12 @@ console.log(socket.handshake.session.userdata);
   	}
   })
 
+  socket.on('submitMove', (move) => {
+  	if(user.room && user.room.game) {
+  		user.room.game.applyNextMove(move);
+  	}
+  })
+
   
 
 

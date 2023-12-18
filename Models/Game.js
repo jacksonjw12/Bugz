@@ -117,6 +117,7 @@ class Game {
 				let emptyNeighbors = [];
 				forEach(this.hexes, (hex) => {
 					forEach(hexesWithBugs, (bugHex) => {
+						//todo, this neighbors function isnt implemented yet
 						if(Hex.neighbors(hex, bugHex)) {
 							forEach(bugs, (bug)=>{
 								moves.push({
@@ -171,7 +172,9 @@ class Game {
 			hexes: this.hexes,
 			activePlayer: this.activePlayer,
 			validNextMoves: this.nextMoves,
-			bugs: this.bugs
+			bugs: this.bugs,
+			round: this.round,
+			turn: this.turn,
 		}
 	}
 
@@ -181,8 +184,11 @@ class Game {
 	}
 
 	applyNextMove(move) {
-
-		this.nextTurn();
+		if(this.validateNextMove(move)) {
+			//todo - actually apply the move
+			this.nextTurn();
+		}
+		
 	}
 	nextTurn() {
 		this.turn++;

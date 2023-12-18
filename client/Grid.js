@@ -10,16 +10,17 @@ const hexPoints = [
 		];
 
 
-const bugs = new Set("🐝","🕷", "🐜", "🐞","🦗")
-
+const bugSet = new Set("🐝","🕷", "🐜", "🐞","🦗")
+const bugs = ["🐝","🕷", "🐜", "🐞","🦗"]
 class Overlay {
-	static applyGameState(state) {
+	static applyGameState(state, focusedBug) {
 		const playing = state.activePlayer == userId;
+		console.log("playing: ", state.activePlayer, userId)
 
 		if(playing) {
 			document.getElementById("turnIndicator").innerHTML = "Your turn"
 			document.getElementById("turnIndicator").style.background = "gold";
-			Overlay.showAddOptions();
+			Overlay.showAddOptions(state,focusedBug);
 			document.getElementById("bugButtons").style.display = "flex"
 		}
 		else {
@@ -27,28 +28,55 @@ class Overlay {
 			document.getElementById("turnIndicator").style.background = "grey";
 			document.getElementById("bugButtons").style.display = "none"
 		}
-		//bugButtons
+		
+
+
 
 	}
 
-	static showAddOptions(state) {
+	static showAddOptions(state, focusedBug) {
 		const bugsOwned = state.bugs[userId];
 
 
 		const addableBugs = new Set();
 		const validMoves = state.validNextMoves;
 		forEach(validMoves, (move) => {
-			addableBugs.add(move.bug)
+			if(move.type == 'add') {
+				addableBugs.add(move.bug)
+			}
+			
 		})
 
-		bugs.forEach()
+		const disabledBugs = {};
+		forEach(bugs, (bug) => {
+			if(!addableBugs.has(bug)) {
+				disabledBugs.push
+			}
+		})
 
-		!addableBugs.has(x)
-
-
-
-
-		addableBugs.forEach() 
+		
+		document.getElementById('bugButtons').innerHTML = `
+		<div id="🐝Button" onClick="Grid.instance.focusBug('🐝')" class="bugButton ${ !addableBugs.has('🐝') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐝' ? 'selected' : ''}" ${bugsOwned['🐝'] == 1 ? 'style:display:none;' : ''} >
+            <div id="🐝Amount" class="numBugs ${ !addableBugs.has('🐝') ? 'hiddenBug' : ''}">${bugsOwned['🐝']}</div>
+            <div class="bug ${ !addableBugs.has('🐝') ? 'hiddenBug' : ''}">🐝</div>
+        </div>
+        <div id="🕷Button" onClick="Grid.instance.focusBug('🕷')" class="bugButton ${ !addableBugs.has('🕷') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🕷' ? 'selected' : ''}" ${bugsOwned['🕷'] == 0 ? 'style:display:none;' : ''}>
+            <div id="🕷Amount" class="numBugs ${ !addableBugs.has('🕷') ? 'hiddenBug' : ''}">${bugsOwned['🕷']}</div>
+            <div class="bug ${ !addableBugs.has('🕷') ? 'hiddenBug' : ''}">🕷</div>
+        </div>
+        <div id="🐜Button" onClick="Grid.instance.focusBug('🐜')" class="bugButton ${ !addableBugs.has('🐜') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐜' ? 'selected' : ''}" ${bugsOwned['🐜'] == 0 ? 'style:display:none;' : ''}>
+            <div id="🐜Amount" class="numBugs ${ !addableBugs.has('🐜') ? 'hiddenBug' : ''}">${bugsOwned['🐜']}</div>
+            <div class="bug ${ !addableBugs.has('🐜') ? 'hiddenBug' : ''}">🐜</div>
+            </div>
+        <div id="🐞Button" onClick="Grid.instance.focusBug('🐞')" class="bugButton ${ !addableBugs.has('🐞') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐞' ? 'selected' : ''}" ${bugsOwned['🐞'] == 0 ? 'style:display:none;' : ''}>
+            <div id="🐞Amount" class="numBugs ${ !addableBugs.has('🐞') ? 'hiddenBug' : ''}">${bugsOwned['🐞']}</div>
+            <div class="bug ${ !addableBugs.has('🐞') ? 'hiddenBug' : ''}">🐞</div>
+            </div>
+        <div id="🦗Button" onClick="Grid.instance.focusBug('🦗')" class="bugButton ${ !addableBugs.has('🦗') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🦗' ? 'selected' : ''}" ${bugsOwned['🦗'] == 0 ? 'style:display:none;' : ''}>
+            <div id="🦗Amount" class="numBugs ${ !addableBugs.has('🦗') ? 'hiddenBug' : ''}">${bugsOwned['🦗']}</div>
+            <div class="bug ${ !addableBugs.has('🦗') ? 'hiddenBug' : ''}">🦗</div>
+        </div>
+		`
 
 	}
 }
@@ -57,21 +85,57 @@ class Grid {
 
 	constructor(canvas) {
 		
+		this.focusedBug = undefined;
 		this.hexes = []
 		const width = 5;
 		const height = 5;
 		for(var c = -Math.floor(width/2); c< Math.ceil(width/2); c++) {
 			for(var r = -Math.floor(height/2) + ((c % 2 == 0) ? 0 : 1); r < Math.ceil(height); r+=2) {
 				this.hexes.push({x:c,y:-r})
-				// drawHexLine({x:c, y: -r})
 			}
 		}
 		this.render();
 	}
 
+	focusBug(bug) {
+		console.log(bug);
+		if(this.focusedBug == bug) {
+			this.focusedBug = undefined;
+		}
+		else {
+			this.focusedBug = bug;
+		}
+
+		Overlay.applyGameState(this.state, this.focusedBug);
+
+		this.render();
+	}
+
 	applyNewGameState(state) {
+		this.state = state;
+		this.focusedBug = undefined;
 		this.hexes = state.hexes;
-		Overlay.applyGameState(state);
+		Overlay.applyGameState(state, this.focusedBug);
+
+	}
+
+	onClick() {
+		console.log('click');
+
+		const highlightHexes = [];
+		if(this.state) {
+			for(let m = 0; m < this.state.validNextMoves.length; m++) {
+				if(this.state.validNextMoves[m].bug == this.focusedBug) {
+					if(this.state.validNextMoves[m].to.x == this.focusedHex.x && this.state.validNextMoves[m].to.y == this.focusedHex.y) {
+						console.log('valid move found!');
+						submitMove(this.state.validNextMoves[m])
+						return;
+					}
+				}
+			}
+			console.log('No valid moves found for clicked position')
+		}
+
 	}
 
 	onMouseMove() {
@@ -105,21 +169,27 @@ class Grid {
 		canvas.ctx.fillStyle = "white"
 		canvas.ctx.fillRect(0,0,canvas.width,canvas.height);
 
-		const drawHexLine = (hex) => {
+		const highlightHexes = [];
+		if(this.state) {
+			for(let m = 0; m < this.state.validNextMoves.length; m++) {
+				if(this.state.validNextMoves[m].bug == this.focusedBug && this.state.validNextMoves[m].type == 'add') {
+					highlightHexes.push(this.state.validNextMoves[m].to);
+				}
+			}
+		}
+		
 
-			if(this.focusedHex == hex) {
+		const drawHexLine = (hex, focused) => {
+
+			if(focused) {
 				canvas.ctx.strokeStyle = "red";
 				canvas.ctx.lineWidth = 2;
 			} else {
 				canvas.ctx.strokeStyle = "black";
 				canvas.ctx.lineWidth = 1;
 			}
-			
-
 
 			hex.centroid = cameraTransform(hexTransform({x:0, y:0}, hex));
-			// canvas.ctx.fillStyle = "blue"
-			// canvas.ctx.fillRect(hex.centroid.x, hex.centroid.y, 10,10)
 
 			const initial = cameraTransform(hexTransform(hexPoints[0], hex));
 			canvas.ctx.beginPath();
@@ -129,6 +199,21 @@ class Grid {
 				canvas.ctx.lineTo(transformed.x,transformed.y);
 			}
 			canvas.ctx.lineTo(initial.x,initial.y);
+
+			let highlight = false;
+			for(let h = 0; h < highlightHexes.length; h++) {
+				if(highlightHexes[h].x == hex.x && highlightHexes[h].y == hex.y) {
+					highlight = true;
+					break;
+				}
+			}
+			if(highlight) {
+				canvas.ctx.strokeStyle = focused ? 'purple' : "blue";
+				canvas.ctx.lineWidth = 3;
+				canvas.ctx.fill();
+			}
+
+
 			canvas.ctx.stroke();
 		}
 
@@ -139,7 +224,7 @@ class Grid {
 			drawHexLine(this.hexes[b])
 		}
 		if(this.focusedHex) {
-			drawHexLine(this.focusedHex)
+			drawHexLine(this.focusedHex, true)
 		}
 	}
 

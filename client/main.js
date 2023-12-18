@@ -35,13 +35,24 @@ window.onload = function(){
 
 	const touchState = {
 		inTouch: false,
+		touchStartMillis: undefined
 	}
+
 	canvas.el.addEventListener("mousedown", (event) => {
 		touchState.inTouch = true;
+		touchState.touchStartMillis = Date.now();
 	})
 
 	canvas.el.addEventListener("mouseup", (event) => {
 		touchState.inTouch = false;
+
+		const mouseDownTime = Date.now() - touchState.touchStartMillis;
+
+		if(mouseDownTime < 250) {
+			Grid.instance.onClick();
+		}
+
+		touchState.touchStartMillis = undefined;
 	})
 
 	canvas.el.addEventListener("mousemove", (event) => {

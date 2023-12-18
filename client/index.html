@@ -45,26 +45,17 @@
 
       <div class="footer">
         <div id="bugButtons" class = "bugButtons">
-          <div id="🐝Button" class="bugButton" style="display:none">
+            
+          <div id="🐝Button" onClick="Grid.instance.focusBug('🐝')" class="bugButton selected" >
             <div id="🐝Amount" class="numBugs">2</div>
             <div class="bug">🐝</div>
           </div>
-          <div id="🕷Button" class="bugButton">
-            <div id="🕷Amount" class="numBugs">2</div>
-            <div class="bug">🕷</div>
-            </div>
-          <div id="🐜Button" class="bugButton">
-            <div id="🐜Amount" class="numBugs">2</div>
-            <div class="bug">🐜</div>
-            </div>
-          <div id="🐞Button" class="bugButton">
-            <div id="🐞Amount" class="numBugs">2</div>
-            <div class="bug">🐞</div>
-            </div>
-          <div id="🦗Button" class="bugButton">
-            <div id="🦗Amount" class="numBugs">2</div>
-            <div class="bug">🦗</div>
-            </div>
+
+          <div id="🐝Button" class="bugButton hiddenBugContainer" >
+            <div id="🐝Amount" class="numBugs hiddenBug">1</div>
+            <div class="bug hiddenBug">🐝</div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -80,6 +71,8 @@
   let state = {id: ''}
   let currentView = "menu";
   function updateState(newState) {
+    window.userId = newState.id;
+
     let newView = currentView;
     if(newState.room) {
       newView = newState.room.game ? 'game' : 'room';
@@ -95,7 +88,6 @@
     }
     if(newView == 'menu') {
       document.getElementById('userId').innerHTML = newState.id;
-      window.userId = newState.id;
     }
     else if(newView == 'room') {
       Room.applyNewRoomState(state.room)
@@ -125,6 +117,11 @@
 
   function joinWithCode() {
     socket.emit('joinGame', {code: document.getElementById('joinGameCode').value})
+  }
+
+  function submitMove(move) {
+    socket.emit('submitMove', move)
+
   }
 
   function startGame() {

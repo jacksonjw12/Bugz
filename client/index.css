@@ -88,6 +88,25 @@ h1 {text-align:center; width:100%;}
 
 }
 
+.bugButton:hover:not(.hiddenBugContainer) {
+  border: 1px solid green;
+  background:green;
+}
+
+.selected {
+  border: 1px solid black;
+  background:green;
+}
+
+
+
+.hiddenBug {
+  background-color:white;
+  
+  color: grey;
+  filter: grayscale(100%)
+}
+
 .numBugs {
   position:absolute;
   aspect-ratio : 1 / 1;
