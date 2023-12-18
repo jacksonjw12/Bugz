@@ -8,9 +8,9 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 
-let {User} = require('./models/User.js');
-let {Room} = require('./models/Room.js');
-let {Game} = require('./models/Game.js');
+let {User} = require('./Models/User.js');
+let {Room} = require('./Models/Room.js');
+let {Game} = require('./Models/Game.js');
 
 
 const session = require("express-session")({

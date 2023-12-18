@@ -86,6 +86,8 @@ class Grid {
 	constructor(canvas) {
 		
 		this.focusedBug = undefined;
+		this.selectedHex = undefined;
+		this.focusedHex = undefined;
 		this.hexes = []
 		const width = 5;
 		const height = 5;
@@ -98,23 +100,42 @@ class Grid {
 	}
 
 	focusBug(bug) {
-		console.log(bug);
 		if(this.focusedBug == bug) {
 			this.focusedBug = undefined;
+			this.highlightHexes([]);
 		}
 		else {
 			this.focusedBug = bug;
+			let highlights = []
+			for(let m = 0; m < this.state.validNextMoves.length; m++) {
+				if(this.state.validNextMoves[m].bug == this.focusedBug && this.state.validNextMoves[m].type == 'add') {
+					highlights.push(this.state.validNextMoves[m].to);
+				}
+			}
+			this.highlightHexes(highlights);
 		}
+
+
 
 		Overlay.applyGameState(this.state, this.focusedBug);
 
 		requestAnimationFrame(()=>{this.render()});
 	}
 
-	applyNewGameState(state) {
-		this.state = state;
+	clearLocalState() {
 		this.focusedBug = undefined;
-		this.hexes = state.hexes;
+		this.selectedHex = undefined;
+		this.focusedHex = undefined;
+		this.highlightHexes([])
+	}
+	applyNewGameState(state) {
+		if(this.state == undefined || this.state.turn != state.turn) {
+			this.clearLocalState();
+			this.hexes = state.hexes;
+		}
+		this.state = state;
+		
+		
 		Overlay.applyGameState(state, this.focusedBug);
 
 		requestAnimationFrame(()=>{this.render()});
@@ -122,22 +143,66 @@ class Grid {
 	}
 
 	onClick() {
-		console.log('click');
-
-		const highlightHexes = [];
 		if(this.state) {
+			console.log(this.focusedBug)
+
+			let newHighlights = [];
+
 			for(let m = 0; m < this.state.validNextMoves.length; m++) {
-				if(this.state.validNextMoves[m].bug == this.focusedBug) {
-					if(this.state.validNextMoves[m].to.x == this.focusedHex.x && this.state.validNextMoves[m].to.y == this.focusedHex.y) {
-						console.log('valid move found!');
-						submitMove(this.state.validNextMoves[m])
-						return;
+				// Submit add moves
+				if(this.focusedBug) {
+					if(this.state.validNextMoves[m].bug == this.focusedBug && this.state.validNextMoves[m].type == 'add') {
+						if(Hex.is(this.state.validNextMoves[m].to, this.focusedHex)) {
+							console.log('valid move found!');
+							submitMove(this.state.validNextMoves[m])
+							return;
+						}
 					}
+					console.log('No valid bug additions found in this position')
 				}
+				else if(this.state.activePlayer == userId){
+					//Submit/select move moves
+
+					// Check for submit
+					if(this.selectedHex) {
+						// Check if there are moves ending in this position
+						if(this.state.validNextMoves[m].type == 'move' && Hex.is(this.state.validNextMoves[m].to, this.focusedHex)) {
+							submitMove(this.state.validNextMoves[m])
+							return;
+						}
+						console.log('No moves ending in this position')
+					}
+					else {
+						// Check if there are moves originating from this position
+						if(this.state.validNextMoves[m].type == 'move' && Hex.is(this.state.validNextMoves[m].from, this.focusedHex)) {
+							newHighlights.push(this.state.validNextMoves[m].to)
+							continue;
+						}
+						
+					}
+
+				}
+				
+
+				
 			}
-			console.log('No valid moves found for clicked position')
+			if(newHighlights) {
+				this.selectedHex = this.focusedHex;
+				this.highlightHexes(newHighlights);
+			}
+			
 		}
 
+	}
+
+	highlightHexes(hexlist) {
+		for(let h = 0; h < this.hexes.length; h++) {
+			if(Hex.in(hexlist, this.hexes[h])) {
+				this.hexes[h].highlight = true;
+			} else{
+				this.hexes[h].highlight = false;
+			}
+		}
 	}
 
 	onMouseMove() {
@@ -173,11 +238,17 @@ class Grid {
 
 		const highlightHexes = [];
 		if(this.state) {
-			for(let m = 0; m < this.state.validNextMoves.length; m++) {
-				if(this.state.validNextMoves[m].bug == this.focusedBug && this.state.validNextMoves[m].type == 'add') {
-					highlightHexes.push(this.state.validNextMoves[m].to);
+			if(this.focusedBug) {
+				for(let m = 0; m < this.state.validNextMoves.length; m++) {
+					if(this.state.validNextMoves[m].bug == this.focusedBug && this.state.validNextMoves[m].type == 'add') {
+						highlightHexes.push(this.state.validNextMoves[m].to);
+					}
 				}
 			}
+			else if(this.selectedHex) {
+
+			}
+			
 		}
 
 		canvas.ctx.font = `${hexSize * camera.zoom}px serif`;
@@ -205,16 +276,9 @@ class Grid {
 			}
 			canvas.ctx.lineTo(initial.x,initial.y);
 
-			let highlight = false;
-			for(let h = 0; h < highlightHexes.length; h++) {
-				if(highlightHexes[h].x == hex.x && highlightHexes[h].y == hex.y) {
-					highlight = true;
-					break;
-				}
-			}
+			let highlight = hex.highlight;
 		
-
-			if(highlight) {
+			if(hex.highlight) {
 				canvas.ctx.strokeStyle = focused ? 'purple' : "blue";
 				canvas.ctx.lineWidth = 3;
 				// canvas.ctx.fill();
@@ -241,12 +305,6 @@ class Grid {
 		if(this.focusedHex) {
 			drawHexLine(this.focusedHex, true)
 		}
-	}
-
-
-	clear() {
-		this.hexes = undefined;
-		this.focusedHex = undefined;
 	}
 
 }

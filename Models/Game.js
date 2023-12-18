@@ -81,6 +81,29 @@ class Game {
 	// Active player moves one bug to another position.
 	generateBugMoves() {
 		let moves = [];
+
+		forEach(this.hexes, (hex) => {
+			if(hex.bugs.length == 0) {
+				return;
+			}
+			if(!Hex.isOwner(hex, this.activePlayer)){
+				return;
+			}
+
+			const bug = hex.bugs[hex.bugs.length-1].bug;
+
+			Hex.forEachNeighbor(this.hexes, hex, (neighbor) => {
+			moves.push({
+					bug: bug,
+					type: 'move',
+					from: hex,
+					to: neighbor,
+					player: this.activePlayer
+				})
+			})
+
+		});
+
 		return moves;
 	}
 
@@ -95,7 +118,7 @@ class Game {
 
 			let bordersPlayer = false;
 			let bordersOpponent = false;
-			Hex.checkNeighborCondition(this.hexes, hex, (neighboring) => {
+			Hex.forEachNeighbor(this.hexes, hex, (neighboring) => {
 				if(!neighboring.bugs.length) {
 					return;
 				}
