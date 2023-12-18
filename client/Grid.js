@@ -142,57 +142,70 @@ class Grid {
 
 	}
 
-	onClick() {
-		if(this.state) {
-			console.log(this.focusedBug)
-
-			let newHighlights = [];
-
-			for(let m = 0; m < this.state.validNextMoves.length; m++) {
-				// Submit add moves
-				if(this.focusedBug) {
-					if(this.state.validNextMoves[m].bug == this.focusedBug && this.state.validNextMoves[m].type == 'add') {
-						if(Hex.is(this.state.validNextMoves[m].to, this.focusedHex)) {
-							console.log('valid move found!');
-							submitMove(this.state.validNextMoves[m])
-							return;
-						}
-					}
-					console.log('No valid bug additions found in this position')
+	attemptSubmitAddMove() {
+		console.log('attemptSubmitAddMove')
+		for(let m = 0; m < this.state.validNextMoves.length; m++) {
+			// Submit add moves
+		
+			if(this.state.validNextMoves[m].type == 'add' && this.state.validNextMoves[m].bug == this.focusedBug) {
+				if(Hex.is(this.state.validNextMoves[m].to, this.focusedHex)) {
+					console.log('valid move found!');
+					submitMove(this.state.validNextMoves[m])
+					return;
 				}
-				else if(this.state.activePlayer == userId){
-					//Submit/select move moves
-
-					// Check for submit
-					if(this.selectedHex) {
-						// Check if there are moves ending in this position
-						if(this.state.validNextMoves[m].type == 'move' && Hex.is(this.state.validNextMoves[m].to, this.focusedHex)) {
-							submitMove(this.state.validNextMoves[m])
-							return;
-						}
-						console.log('No moves ending in this position')
-					}
-					else {
-						// Check if there are moves originating from this position
-						if(this.state.validNextMoves[m].type == 'move' && Hex.is(this.state.validNextMoves[m].from, this.focusedHex)) {
-							newHighlights.push(this.state.validNextMoves[m].to)
-							continue;
-						}
-						
-					}
-
-				}
-				
-
-				
 			}
-			if(newHighlights) {
-				this.selectedHex = this.focusedHex;
-				this.highlightHexes(newHighlights);
-			}
+			console.log('No valid bug additions found in this position')
 			
 		}
+	}
 
+	attemptSubmitMoveMove() {
+		console.log('attemptSubmitMoveMove')
+		for(let m = 0; m < this.state.validNextMoves.length; m++) {
+			if(this.state.validNextMoves[m].type == 'move' && Hex.is(this.state.validNextMoves[m].to, this.focusedHex)) {
+				submitMove(this.state.validNextMoves[m])
+				return;
+			}
+		}
+		this.selectedHex = undefined;
+	}
+
+	attemptSelectHex() {
+		console.log('attemptSelectHex');
+
+		// Look through the moves to find a move that originates in the selected hex. Highlight the destinations.
+		let newHighlights = [];
+		for(let m = 0; m < this.state.validNextMoves.length; m++) {
+			if(this.state.validNextMoves[m].type == 'move' && Hex.is(this.state.validNextMoves[m].from, this.focusedHex)) {
+				newHighlights.push(this.state.validNextMoves[m].to)
+			}
+		}
+
+		if(newHighlights) {
+			this.selectedHex = this.focusedHex;
+			this.highlightHexes(newHighlights);
+		}
+
+	}
+
+	onClick() {
+		if(!this.state || this.state.activePlayer != userId) {
+			return;
+		}
+
+		if(this.focusedBug) {
+			this.attemptSubmitAddMove();
+			return;
+		}
+		else if(this.selectedHex) {
+			console.log(this.selectedHex);
+			this.attemptSubmitMoveMove();
+			return;
+		}
+		this.attemptSelectHex();
+		requestAnimationFrame(()=>{this.render()});
+
+		
 	}
 
 	highlightHexes(hexlist) {
@@ -236,20 +249,20 @@ class Grid {
 		canvas.ctx.fillStyle = "white"
 		canvas.ctx.fillRect(0,0,canvas.width,canvas.height);
 
-		const highlightHexes = [];
-		if(this.state) {
-			if(this.focusedBug) {
-				for(let m = 0; m < this.state.validNextMoves.length; m++) {
-					if(this.state.validNextMoves[m].bug == this.focusedBug && this.state.validNextMoves[m].type == 'add') {
-						highlightHexes.push(this.state.validNextMoves[m].to);
-					}
-				}
-			}
-			else if(this.selectedHex) {
+		// const highlightHexes = [];
+		// if(this.state) {
+		// 	if(this.focusedBug) {
+		// 		for(let m = 0; m < this.state.validNextMoves.length; m++) {
+		// 			if(this.state.validNextMoves[m].bug == this.focusedBug && this.state.validNextMoves[m].type == 'add') {
+		// 				highlightHexes.push(this.state.validNextMoves[m].to);
+		// 			}
+		// 		}
+		// 	}
+		// 	else if(this.selectedHex) {
 
-			}
+		// 	}
 			
-		}
+		// }
 
 		canvas.ctx.font = `${hexSize * camera.zoom}px serif`;
 		const iconOffset = hexSize * camera.zoom;
@@ -278,11 +291,13 @@ class Grid {
 
 			let highlight = hex.highlight;
 		
+
 			if(hex.highlight) {
 				canvas.ctx.strokeStyle = focused ? 'purple' : "blue";
 				canvas.ctx.lineWidth = 3;
 				// canvas.ctx.fill();
 			}
+
 
 
 			canvas.ctx.stroke();
@@ -293,6 +308,11 @@ class Grid {
 				canvas.ctx.fillStyle = `#${bugData.owner}`;
 				canvas.ctx.fill();
 				canvas.ctx.fillText(bug, hex.centroid.x - iconOffset/1.5 , hex.centroid.y + iconOffset/2.5)
+			}
+
+			if(this.selectedHex && Hex.is(this.selectedHex, hex)) {
+				canvas.ctx.fillStyle = `rgba(255,255,255,0.5)`;
+				canvas.ctx.fill();
 			}
 		}
 

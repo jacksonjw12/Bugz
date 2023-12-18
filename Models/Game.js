@@ -86,6 +86,7 @@ class Game {
 			if(hex.bugs.length == 0) {
 				return;
 			}
+			console.log("??", hex);
 			if(!Hex.isOwner(hex, this.activePlayer)){
 				return;
 			}
@@ -267,7 +268,7 @@ class Game {
 			if(move.type == 'add') {
 				let targetHex = Hex.find(this.hexes, move.to);
 				if(!targetHex) {
-					console.log("whoa, this should not happen yikes");
+					console.log("Could not find targetHex, yikes");
 					return;
 					
 				}
@@ -276,6 +277,25 @@ class Game {
 				this.bugs[this.activePlayer][move.bug]--;
 
 				this.ensureNeighborsExist(targetHex);
+			}
+			else {
+
+				let destinationHex = Hex.find(this.hexes, move.to);
+				let originHex = Hex.find(this.hexes, move.from);
+				if(!destinationHex || !originHex) {
+					console.log("Could not find destinationHex or originHex, yikes");
+					return;
+				}
+
+				console.log("originHex", originHex);
+				const bug = originHex.bugs.splice(originHex.bugs.length-1, 1)[0];
+
+				destinationHex.bugs.push(bug);
+
+				console.log("destination", destinationHex);
+
+				this.ensureNeighborsExist(destinationHex);
+
 			}
 
 
