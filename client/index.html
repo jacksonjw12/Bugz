@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>🐝Bugz🐝</title>
+    <style>
+      body { margin: 0; padding:0; overflow:hidden;}
+
+      h1 {text-align:center; width:100%;}
+      .intro {
+        width:80%;
+        border: 1px dashed black;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        margin-top:2rem;
+        padding:2rem;
+
+      }
+      .intro > button {
+        width:10rem;
+        margin-bottom:2rem;
+      }
+
+      .intro > hr {
+        width:50%;
+      }
+
+      .introContainer {
+        display:flex;
+        flex-direction:row;
+        width:100%;
+        justify-content:center;
+      }
+      .userIdContainer {
+        padding-top:1rem;
+      }
+      #userId {
+        font-style:italic;
+        
+      }
+      .playerList {
+        width: 10rem;
+      }
+      .playerList {
+        text-decoration:underline;
+        list-style-type: circle;
+      }
+
+
+      .overlay {
+        position:absolute;
+        top:0;
+        left:0;
+        z-index:2;
+      }
+
+      .game {
+        margin:0;
+        padding:0;
+      }
+
+    </style>
+  </head>
+  <body>
+
+  <div id="menu" style="display:block">
+    <h1> Bug Game </h1>
+
+    <div class="introContainer">
+      <div class="intro">
+        <button onclick="newGame()"> New Game </button>
+        <hr>
+        <h2> Join Game with Code </h2>
+        <div>
+          <input type="text" id="joinGameCode" />
+          <button onclick="joinWithCode()"> Join </button>
+        </div>
+        <div class="userIdContainer">UID: <span id="userId"></span></div>
+      </div>  
+    </div>
+  </div>
+
+  <div id="room" style="display:none">
+    <div class="introContainer">
+     <div class="intro">
+
+      <h1 id="roomCode"> Waiting room:</h1>
+       <h2> Players </h2>
+       <ul id="playerList" class="playerList">
+         
+       </ul>
+       <button id="startButton" onclick="startGame()"> Start Game </button>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="game" style="display:none">
+    <div class="overlay">
+
+      <div class="header"> Header</div>
+    </div>
+    <canvas id="canvas"></canvas>
+  </div>
+  </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+
+  const hide = (id) => {document.getElementById(id).style.display = "none"}
+  const show = (id) => {document.getElementById(id).style.display = "block"}
+
+  let state = {id: ''}
+  let currentView = "menu";
+  function updateState(newState) {
+    let newView = currentView;
+    if(newState.room) {
+      newView = newState.room.game ? 'game' : 'room';
+    }
+    else {
+      newView = 'menu'
+    }
+    console.log({newView})
+
+    state = newState;
+    if(newView != currentView) {
+     hide(currentView);
+    }
+    if(newView == 'menu') {
+      document.getElementById('userId').innerHTML = newState.id;
+    }
+    else if(newView == 'room') {
+      Room.applyNewRoomState(state.room)
+      
+    }
+    else if(newView == 'game') {
+      Grid.instance.applyNewGameState(state.room.game);
+    }
+
+    show(newView);
+    currentView = newView;
+
+  }
+
+
+  var socket = io();
+  socket.on('state', function(newState) {
+   console.log({newState});
+   updateState(newState);
+  });
+
+  function newGame() {
+    console.log('new game')
+    socket.emit('newGame');
+  }
+
+  function joinWithCode() {
+    socket.emit('joinGame', {code: document.getElementById('joinGameCode').value})
+  }
+
+  function startGame() {
+    socket.emit('startGame');
+
+  }
+
+  </script>
+
+    <script src="utils.js"></script>
+    <script src="Grid.js"></script>
+    <script src="Room.js"></script>
+
+    <script src="main.js"></script>
+</html>

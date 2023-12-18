@@ -1,0 +1,17 @@
+{
+  "name": "Bugz",
+  "version": "0.0.1",
+  "description": "Bug energy online",
+  "scripts": {
+    "start": "node index.js",
+    "startmon": "nodemon index.js"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "express-socket.io-session": "^1.3.5",
+    "nodemon": "^3.0.2",
+    "socket.io": "^4.7.2"
+  }
+}
