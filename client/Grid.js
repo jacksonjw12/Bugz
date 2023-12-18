@@ -10,6 +10,49 @@ const hexPoints = [
 		];
 
 
+const bugs = new Set("🐝","🕷", "🐜", "🐞","🦗")
+
+class Overlay {
+	static applyGameState(state) {
+		const playing = state.activePlayer == userId;
+
+		if(playing) {
+			document.getElementById("turnIndicator").innerHTML = "Your turn"
+			document.getElementById("turnIndicator").style.background = "gold";
+			Overlay.showAddOptions();
+			document.getElementById("bugButtons").style.display = "flex"
+		}
+		else {
+			document.getElementById("turnIndicator").innerHTML = "Opponents turn"
+			document.getElementById("turnIndicator").style.background = "grey";
+			document.getElementById("bugButtons").style.display = "none"
+		}
+		//bugButtons
+
+	}
+
+	static showAddOptions(state) {
+		const bugsOwned = state.bugs[userId];
+
+
+		const addableBugs = new Set();
+		const validMoves = state.validNextMoves;
+		forEach(validMoves, (move) => {
+			addableBugs.add(move.bug)
+		})
+
+		bugs.forEach()
+
+		!addableBugs.has(x)
+
+
+
+
+		addableBugs.forEach() 
+
+	}
+}
+
 class Grid {
 
 	constructor(canvas) {
@@ -24,11 +67,11 @@ class Grid {
 			}
 		}
 		this.render();
-		
 	}
 
 	applyNewGameState(state) {
 		this.hexes = state.hexes;
+		Overlay.applyGameState(state);
 	}
 
 	onMouseMove() {

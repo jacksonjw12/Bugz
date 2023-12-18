@@ -28,7 +28,13 @@ function makeUniqueId(idList){
 	}
 }
 
+const forEach = (list, cb) => {
+	for(let i = 0; i <list.length; i++) {
+		cb(list[i], i);
+	}
+}
 
 
 
+exports.forEach = forEach;
 exports.makeUniqueId = makeUniqueId;

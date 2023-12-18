@@ -2,64 +2,8 @@
 <html>
   <head>
     <title>🐝Bugz🐝</title>
-    <style>
-      body { margin: 0; padding:0; overflow:hidden;}
-
-      h1 {text-align:center; width:100%;}
-      .intro {
-        width:80%;
-        border: 1px dashed black;
-        display:flex;
-        flex-direction:column;
-        align-items:center;
-        margin-top:2rem;
-        padding:2rem;
-
-      }
-      .intro > button {
-        width:10rem;
-        margin-bottom:2rem;
-      }
-
-      .intro > hr {
-        width:50%;
-      }
-
-      .introContainer {
-        display:flex;
-        flex-direction:row;
-        width:100%;
-        justify-content:center;
-      }
-      .userIdContainer {
-        padding-top:1rem;
-      }
-      #userId {
-        font-style:italic;
-        
-      }
-      .playerList {
-        width: 10rem;
-      }
-      .playerList {
-        text-decoration:underline;
-        list-style-type: circle;
-      }
-
-
-      .overlay {
-        position:absolute;
-        top:0;
-        left:0;
-        z-index:2;
-      }
-
-      .game {
-        margin:0;
-        padding:0;
-      }
-
-    </style>
+    <link rel="stylesheet" type="text/css" href="index.css">
+   
   </head>
   <body>
 
@@ -97,8 +41,32 @@
 
   <div id="game" style="display:none">
     <div class="overlay">
+    <div id="turnIndicator">Your turn</div>
 
-      <div class="header"> Header</div>
+      <div class="footer">
+        <div id="bugButtons" class = "bugButtons">
+          <div id="🐝Button" class="bugButton" style="display:none">
+            <div id="🐝Amount" class="numBugs">2</div>
+            <div class="bug">🐝</div>
+          </div>
+          <div id="🕷Button" class="bugButton">
+            <div id="🕷Amount" class="numBugs">2</div>
+            <div class="bug">🕷</div>
+            </div>
+          <div id="🐜Button" class="bugButton">
+            <div id="🐜Amount" class="numBugs">2</div>
+            <div class="bug">🐜</div>
+            </div>
+          <div id="🐞Button" class="bugButton">
+            <div id="🐞Amount" class="numBugs">2</div>
+            <div class="bug">🐞</div>
+            </div>
+          <div id="🦗Button" class="bugButton">
+            <div id="🦗Amount" class="numBugs">2</div>
+            <div class="bug">🦗</div>
+            </div>
+        </div>
+      </div>
     </div>
     <canvas id="canvas"></canvas>
   </div>
@@ -127,6 +95,7 @@
     }
     if(newView == 'menu') {
       document.getElementById('userId').innerHTML = newState.id;
+      window.userId = newState.id;
     }
     else if(newView == 'room') {
       Room.applyNewRoomState(state.room)
@@ -140,6 +109,7 @@
     currentView = newView;
 
   }
+
 
 
   var socket = io();

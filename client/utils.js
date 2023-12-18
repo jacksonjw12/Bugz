@@ -29,3 +29,9 @@ const debounce = (func, wait, immediate) => {
 	        if (callNow) func.apply(context, args);
 	    };
 	};
+
+const forEach = (list, cb) => {
+	for(let i = 0; i <list.length; i++) {
+		cb(list[i], i);
+	}
+}
