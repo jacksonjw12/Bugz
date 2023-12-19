@@ -96,6 +96,10 @@ class Grid {
 				this.hexes.push({x:c,y:-r})
 			}
 		}
+		this.queueRender();
+	}
+
+	queueRender() {
 		requestAnimationFrame(()=>{this.render()});
 	}
 
@@ -120,7 +124,7 @@ class Grid {
 
 		Overlay.applyGameState(this.state, this.focusedBug);
 
-		requestAnimationFrame(()=>{this.render()});
+		this.queueRender();
 	}
 
 	clearLocalState() {
@@ -130,6 +134,7 @@ class Grid {
 		this.highlightHexes([])
 	}
 	applyNewGameState(state) {
+		
 		if(this.state == undefined || this.state.turn != state.turn) {
 			this.clearLocalState();
 			this.hexes = state.hexes;
@@ -139,7 +144,7 @@ class Grid {
 		
 		Overlay.applyGameState(state, this.focusedBug);
 
-		requestAnimationFrame(()=>{this.render()});
+		this.queueRender();
 
 	}
 
@@ -209,8 +214,7 @@ class Grid {
 			return;
 		}
 		this.attemptSelectHex();
-		requestAnimationFrame(()=>{this.render()});
-
+		this.queueRender();
 		
 	}
 
@@ -226,7 +230,7 @@ class Grid {
 
 	onMouseMove() {
 		this.findFocusedHex();
-		requestAnimationFrame(()=>{this.render()});
+		this.queueRender();
 
 	}
 
@@ -254,21 +258,6 @@ class Grid {
 	render() {
 		canvas.ctx.fillStyle = "white"
 		canvas.ctx.fillRect(0,0,canvas.width,canvas.height);
-
-		// const highlightHexes = [];
-		// if(this.state) {
-		// 	if(this.focusedBug) {
-		// 		for(let m = 0; m < this.state.validNextMoves.length; m++) {
-		// 			if(this.state.validNextMoves[m].bug == this.focusedBug && this.state.validNextMoves[m].type == 'add') {
-		// 				highlightHexes.push(this.state.validNextMoves[m].to);
-		// 			}
-		// 		}
-		// 	}
-		// 	else if(this.selectedHex) {
-
-		// 	}
-			
-		// }
 
 		canvas.ctx.font = `${hexSize * camera.zoom}px serif`;
 		const iconOffset = hexSize * camera.zoom;
@@ -333,6 +322,39 @@ class Grid {
 		}
 	}
 
+
+
+	static getInstance() {
+		if(Grid.instance) {
+			return Grid.instance;
+		}
+
+		const canvas = {};
+		window.canvas = canvas;
+
+		canvas.el = document.getElementById('canvas');
+		if(!canvas.el){
+			console.log(canvas.el, ':(')
+			return;
+		}
+		canvas.ctx = canvas.el.getContext('2d');
+		Grid.instance = new Grid(canvas);
+		
+		function resize() {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+			canvas.el.width = canvas.width;
+			canvas.el.height = canvas.height;
+			Grid.instance.queueRender();
+		}
+
+		resize();
+		window.addEventListener('resize',resize, false);
+
+		
+
+	}
+
 }
 
 
@@ -386,12 +408,8 @@ const hexTransform = (point, about) => {
 	transformed.x += (about.x*ratio*2) * (ratio*hexSize)
 	transformed.y += (about.y) * (ratio*hexSize)
 
-
 	return transformed;
 
 }
-
-
-
 
 

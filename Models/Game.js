@@ -34,7 +34,7 @@ Move {
 const bugs = ["🐝","🕷", "🐜", "🐞","🦗"];
 
 class Game {
-	constructor(room) {
+	constructor(room, existingState) {
 		
 		this.room = room;
 		this.hexes = [];
@@ -57,11 +57,25 @@ class Game {
 			}
 		}
 
+		if(existingState) {
+			this.applyExistingState(existingState)
+		}
+
 		this.generateNewMoves(() => {
 			this.room.emitUpdateToPlayers();
 		})
 
 	}
+
+	applyExistingState(state) {
+		let keys = ['hexes', 'finished', 'winner', 'turn', 'round', 'bugs', 'waitingForPlayer', 'activePlayer'];
+		forEach(keys, (key)=> {
+			if(state[key] !== undefined) {
+				this[key] = state[key];
+			}
+		});
+	}
+
 
 	initBugs() {
 
@@ -213,6 +227,8 @@ class Game {
 				
 			}
 		} else {
+			console.log(this.bugs);
+			console.log(this.activePlayer);
 			let playersBugs = this.bugs[this.activePlayer];
 			const queenPlayed = playersBugs['🐝'] == 0;
 			let playableBugs;

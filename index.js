@@ -57,6 +57,14 @@ console.log(socket.handshake.session.userdata);
   })
 
 
+  socket.on('setupTestState', () => {
+    const room = Room.newRoom(user);
+    const u2 = User.newUser();
+    room.addPlayer(user);
+    room.startTestGame(user.id, u2.id);
+
+  })
+
   socket.on('newGame', () => {
   	Room.newRoom(user);
   	 socket.emit('state', user.getSerialState());
@@ -104,6 +112,11 @@ console.log(socket.handshake.session.userdata);
 
 
 app.use(express.static(__dirname + '/client'))
+
+app.get('/test', function(req, res){
+  res.sendFile(__dirname + '/client/test.html');
+});
+
 
 server.listen(3000, () => {
   console.log('listening on *:3000');

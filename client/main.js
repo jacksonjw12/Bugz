@@ -5,28 +5,7 @@ const camera = {
 }
 
 window.onload = function(){
-	const canvas = {};
-	window.canvas = canvas;
-
-	canvas.el = document.getElementById('canvas');
-	if(!canvas.el){
-		console.log(canvas.el, ':(')
-		return;
-	}
-	canvas.ctx = canvas.el.getContext('2d');
-	
-	function resize() {
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
-		canvas.el.width = canvas.width;
-		canvas.el.height = canvas.height;
-	}
-
-	resize();
-	window.addEventListener('resize',resize, false);
-
-	Grid.instance = new Grid(canvas);
-	console.log('grid', Grid);
+	Grid.getInstance();
 
 	window.mousePos = {
 		x: canvas.width / 2,
@@ -49,7 +28,7 @@ window.onload = function(){
 		const mouseDownTime = Date.now() - touchState.touchStartMillis;
 
 		if(mouseDownTime < 250) {
-			Grid.instance.onClick();
+			Grid.getInstance().onClick();
 		}
 
 		touchState.touchStartMillis = undefined;
@@ -69,7 +48,7 @@ window.onload = function(){
 		
 		mousePos.x = event.clientX;
 		mousePos.y = event.clientY;
-		Grid.instance.onMouseMove();
+		Grid.getInstance().onMouseMove();
 
 
 
@@ -87,7 +66,7 @@ window.onload = function(){
 			camera.centerPoint.y -= yDiff;
 			mousePos.x = event.clientX;
 			mousePos.y = event.clientY;
-			Grid.instance.onMouseMove();
+			Grid.getInstance().onMouseMove();
 
 			// requestAnimationFrame(tick);
 			// debounce(resize, 40, false)
@@ -121,7 +100,7 @@ window.onload = function(){
 		
 		mousePos.x = touch.clientX;
 		mousePos.y = touch.clientY;
-		Grid.instance.onMouseMove();
+		Grid.getInstance().onMouseMove();
 
 
 
@@ -143,7 +122,7 @@ window.onload = function(){
 		const mouseDownTime = Date.now() - touchState.touchStartMillis;
 
 		if(mouseDownTime < 250) {
-			Grid.instance.onClick();
+			Grid.getInstance().onClick();
 		}
 
 		touchState.touchStartMillis = undefined;
@@ -156,6 +135,10 @@ window.onload = function(){
 	socket.on('state', function(newState) {
 		console.log({newState});
 		updateState(newState);
+		if(newState.room && newState.room.game) {
+			Grid.getInstance().applyNewGameState(newState.room.game);
+
+		}
 	});
 
 	let blurManualRequestInterval = 5000;

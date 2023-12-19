@@ -1,5 +1,6 @@
 let {makeUniqueId} = require('../util.js');
 let {Game} = require('./Game.js');
+let {testGameState} = require('../testGameState.js');
 
 class Room {
 	constructor(id, userInitator) {
@@ -57,6 +58,14 @@ class Room {
 		this.loser = undefined;
 		this.emitUpdateToPlayers();
 		
+	}
+
+	startTestGame(playerId1, playerId2) {
+		this.game = new Game(this, testGameState(playerId1, playerId2));
+		this.state = "playing";
+		this.winner = undefined;
+		this.loser = undefined;
+		this.emitUpdateToPlayers();
 	}
 
 	endGame(winner, loser) {

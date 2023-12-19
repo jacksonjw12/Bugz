@@ -27,6 +27,9 @@ class User {
 	}
 
 	emitUpdate() {
+		if(!this.socket) {
+			return;
+		}
 		this.socket.emit('state', this.getSerialState());
 	}
 
