@@ -48,7 +48,7 @@
 
 
   <div id="game" style="display:none">
-    <div class="overlay">
+    <div class="overlay" style="touch-action: none;">
     <div id="turnIndicator">Your turn</div>
     <div id="forfeit" onClick="leaveGame()">Leave game (forfeit)</div>
 
@@ -68,7 +68,7 @@
         </div>
       </div>
     </div>
-    <canvas id="canvas"></canvas>
+    <canvas style="touch-action: none;" id="canvas"></canvas>
   </div>
   </body>
   <script src="/socket.io/socket.io.js"></script>
