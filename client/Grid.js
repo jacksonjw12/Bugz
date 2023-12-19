@@ -134,7 +134,7 @@ class Grid {
 		this.highlightHexes([])
 	}
 	applyNewGameState(state) {
-		
+
 		if(this.state == undefined || this.state.turn != state.turn) {
 			this.clearLocalState();
 			this.hexes = state.hexes;
@@ -341,8 +341,10 @@ class Grid {
 		Grid.instance = new Grid(canvas);
 		
 		function resize() {
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerHeight;
+			const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+			const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+			canvas.width = vw;
+			canvas.height = vh;
 			canvas.el.width = canvas.width;
 			canvas.el.height = canvas.height;
 			Grid.instance.queueRender();
