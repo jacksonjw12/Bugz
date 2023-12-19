@@ -77,19 +77,77 @@ window.onload = function(){
 
 
 	const onTouch = (touchEvent) => {
+		if(touchEvent.touches.length > 0 && touchState.inTouch) {
+			var touch = touchEvent.touches[0];// || touchEvent.changedTouches[0];
+			
+			const xDiff = mousePos.x - touch.clientX;
+			const yDiff = mousePos.y - touch.clientY;
+
+			camera.centerPoint.x += xDiff;
+			camera.centerPoint.y -= yDiff;
+			mousePos.x = event.clientX;
+			mousePos.y = event.clientY;
+			Grid.instance.onMouseMove();
+
+			// requestAnimationFrame(tick);
+			// debounce(resize, 40, false)
+		}
 		if(touchEvent.touches.length == 0) {
+			touchState.inTouch = false;
 			mousePos.x = undefined;
 			mousePos.y = undefined;
+			touchState.touchStartMillis = undefined;
 			return;
 		}
-		var touch = touchEvent.touches[0];// || touchEvent.changedTouches[0];
-		mousePos.x = touch.clientX;
-		mousePos.y = touch.clientY;
+
+		if(touchEvent.touches.length == 1 && !touchState.inTouch) {
+			touchState.inTouch = true;
+			touchState.touchStartMillis = Date.now();
+		}
+		
 	}
 
-	document.addEventListener("touchmove", onTouch);
-	document.addEventListener("touchstart", onTouch);
-	document.addEventListener("touchend", onTouch);
+	document.addEventListener("touchmove", (event) => {
+		var touch = event.touches[0];
+		if(touchState.inTouch) {
+			const xDiff = mousePos.x - touch.clientX;
+			const yDiff = mousePos.y - touch.clientY;
+
+			camera.centerPoint.x += xDiff;
+			camera.centerPoint.y -= yDiff;
+			// requestAnimationFrame(tick);
+			// debounce(resize, 40, false)
+		}
+		
+		mousePos.x = touch.clientX;
+		mousePos.y = touch.clientY;
+		Grid.instance.onMouseMove();
+
+
+
+	});
+	document.addEventListener("touchstart", (event) => {
+		var touch = event.touches[0];
+
+		if(!touchState.inTouch) {
+			mousePos.x = touch.clientX;
+			mousePos.y = touch.clientY;
+		}
+		touchState.inTouch = true;
+		touchState.touchStartMillis = Date.now();
+
+	});
+	document.addEventListener("touchend", (event) => {
+		touchState.inTouch = false;
+
+		const mouseDownTime = Date.now() - touchState.touchStartMillis;
+
+		if(mouseDownTime < 250) {
+			Grid.instance.onClick();
+		}
+
+		touchState.touchStartMillis = undefined;
+	});
 
 
 
@@ -117,23 +175,35 @@ window.onload = function(){
 
 	
 }
+function requestNewId() {
+	socket.emit('requestNewID')
+}
 
+function newGame() {
+console.log('new game')
+socket.emit('newGame');
+}
 
- function newGame() {
-    console.log('new game')
-    socket.emit('newGame');
-  }
+function leaveRoom() {
+	console.log('leaveRoom')
+socket.emit('leaveRoom');
+}
+function leaveGame() {
+	if(confirm("really forfeit?")) {
+		socket.emit('leaveGame');
+	}
+}
 
-  function joinWithCode() {
-    socket.emit('joinGame', {code: document.getElementById('joinGameCode').value})
-  }
+function joinWithCode() {
+socket.emit('joinRoom', {code: document.getElementById('joinGameCode').value})
+}
 
-  function submitMove(move) {
-    socket.emit('submitMove', move)
+function submitMove(move) {
+socket.emit('submitMove', move)
 
-  }
+}
 
-  function startGame() {
-    socket.emit('startGame');
+function startGame() {
+socket.emit('startGame');
 
-  }
+}

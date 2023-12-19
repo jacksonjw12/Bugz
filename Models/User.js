@@ -6,12 +6,24 @@ class User {
 		this.room = undefined;
 	}
 
+	// change user color
+	newID(cb) {
+		if(this.room) {
+			return;
+		}
+
+		this.id = makeUniqueId(User.instances);
+		cb();
+		this.emitUpdate();
+	}
+
 	joinRoom(room) {
 		this.room = room;
 	}
 
 	leaveRoom(room) {
 		this.room = undefined;
+		this.emitUpdate();
 	}
 
 	emitUpdate() {

@@ -14,19 +14,19 @@
       <div class="intro">
         <button onclick="newGame()"> New Game </button>
         <hr>
-        <h2> Join Game with Code </h2>
-        <div>
+        <h2 id="joinGameWithCode"> Join Game with Code </h2>
+        <div class="joinGameInput">
           <input type="text" id="joinGameCode" />
           <button onclick="joinWithCode()"> Join </button>
         </div>
-        <div class="userIdContainer">UID: <span id="userId"></span></div>
+        <div class="userIdContainer">UID: <span id="userId"></span> <span class="idRefresh" onClick="requestNewId()">🔁</span></div>
       </div>  
     </div>
   </div>
 
   <div id="room" style="display:none">
     <div class="introContainer">
-     <div class="intro">
+     <div class="intro waitingRoom">
 
       <h1 id="roomCode"> Waiting room:</h1>
        <h2> Players </h2>
@@ -34,6 +34,10 @@
          
        </ul>
        <button id="startButton" onclick="startGame()"> Start Game </button>
+
+
+        <button id="leaveButton" onClick="leaveRoom()"> Leave Room </button>
+
       </div>
     </div>
   </div>
@@ -42,6 +46,7 @@
   <div id="game" style="display:none">
     <div class="overlay">
     <div id="turnIndicator">Your turn</div>
+    <div id="forfeit" onClick="leaveGame()">Leave game (forfeit)</div>
 
       <div class="footer">
         <div id="bugButtons" class = "bugButtons">
@@ -87,7 +92,10 @@
      hide(currentView);
     }
     if(newView == 'menu') {
+     document.getElementById('userId').style.background = `#${newState.id}`
+
       document.getElementById('userId').innerHTML = newState.id;
+
     }
     else if(newView == 'room') {
       Room.applyNewRoomState(state.room)
@@ -101,9 +109,6 @@
     currentView = newView;
 
   }
-
-
-
   
   </script>
 

@@ -100,6 +100,7 @@ class Grid {
 	}
 
 	focusBug(bug) {
+		this.selectedHex = undefined;
 		if(this.focusedBug == bug) {
 			this.focusedBug = undefined;
 			this.highlightHexes([]);
@@ -181,7 +182,8 @@ class Grid {
 			}
 		}
 
-		if(newHighlights) {
+		if(newHighlights.length) {
+			console.log("newHighlights", newHighlights);
 			this.selectedHex = this.focusedHex;
 			this.highlightHexes(newHighlights);
 		}
@@ -311,7 +313,7 @@ class Grid {
 			}
 
 			if(this.selectedHex && Hex.is(this.selectedHex, hex)) {
-				canvas.ctx.fillStyle = `rgba(255,255,255,0.5)`;
+				canvas.ctx.fillStyle = `rgba(100,255,255,0.5)`;
 				canvas.ctx.fill();
 			}
 		}

@@ -46,18 +46,39 @@ console.log(socket.handshake.session.userdata);
   	 socket.emit('state', user.getSerialState());
   })
 
+  socket.on('requestNewID', () => {
+  	if(!user.room) {
+  		user.newID((newId) => {
+  			socket.handshake.session.userdata = newId;
+  			socket.handshake.session.save();
+  		});
+  		
+  	}
+  })
+
+
   socket.on('newGame', () => {
   	Room.newRoom(user);
   	 socket.emit('state', user.getSerialState());
   })
 
-  socket.on('joinGame', (game) => {
-  	console.log("join " + game.code)
-  	const room = Room.get(game.code);
+  socket.on('joinRoom', (roomData) => {
+  	const room = Room.get(roomData.code);
   	if(room) {
   		room.addPlayer(user);
   	}
 
+  })
+  socket.on('leaveRoom', () => {
+  	if(user.room) {
+  		user.room.removePlayer(user);
+  	}
+
+  })
+  socket.on('leaveGame', (game) => {
+  	if(user.room && user.room.game) {
+  		user.room.endGame(undefined, user.id);
+  	}
   })
 
   socket.on('startGame', () => {

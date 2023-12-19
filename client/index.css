@@ -11,10 +11,44 @@ h1 {text-align:center; width:100%;}
   padding:2rem;
 
 }
-.intro > button {
-  width:10rem;
-  margin-bottom:2rem;
+
+#joinGameWithCode {
+  font-size:4rem;
 }
+
+#menu > h1 {
+  font-size: 8rem;
+  margin-bottom:0;
+}
+.intro > button {
+  padding:2rem;
+  max-width:80%;
+  margin-bottom:2rem;
+  font-size:5rem;
+  border: 1px solid black;
+}
+.joinGameInput {
+  display:flex;
+  flex-direction:row;
+}
+
+.joinGameInput > input {
+  max-width:80%;
+  border: 1px solid black;
+  /*height*/:2rem;
+  /*height:2rem;*/
+  /*padding:/*0rem*/ 1rem 0rem 1rem;*/
+}
+.joinGameInput > button {
+  padding:0rem 1rem 0rem 1rem;
+  max-width:80%;
+  margin-left:2rem;
+  font-size:2rem;
+  /*height:2rem;*/
+  border: 1px solid black;
+
+}
+
 
 .intro > hr {
   width:50%;
@@ -28,10 +62,11 @@ h1 {text-align:center; width:100%;}
 }
 .userIdContainer {
   padding-top:1rem;
+  font-size:3rem;
+
 }
 #userId {
   font-style:italic;
-  
 }
 .playerList {
   width: 10rem;
@@ -98,6 +133,9 @@ h1 {text-align:center; width:100%;}
   background:green;
 }
 
+.waitingRoom {
+  font-size:2rem;
+}
 
 
 .hiddenBug {
@@ -137,4 +175,22 @@ h1 {text-align:center; width:100%;}
   padding: .5rem;
   margin: .25rem;
   background:orange;
+}
+
+#forfeit {
+  pointer-events:all;
+  font-size:2rem;
+  position:absolute;
+  top:0;
+  right:0;
+  border: 1px dashed black;
+  padding: .5rem;
+  margin: .25rem;
+  background:orange;
+}
+
+.idRefresh {
+  cursor: pointer;
+  user-select:none;
+
 }

@@ -5,6 +5,8 @@ class Room {
 	constructor(id, userInitator) {
 		this.id = id;
 		this.state = "waiting"; // playing | 
+		this.winner = undefined;
+		this.loser = undefined;
 
 		this.players = [userInitator];
 
@@ -20,6 +22,18 @@ class Room {
 
 	}
 
+	removePlayer(player) {
+		for(let p = 0; p < this.players.length; p++) {
+			if(this.players[p].id == player.id){
+				player.leaveRoom();
+				this.players.splice(p,1);
+				this.emitUpdateToPlayers();
+
+				return;
+			}
+		}
+	}
+
 	emitUpdateToPlayers() {
 		for(let p = 0; p < this.players.length; p++) {
 			this.players[p].emitUpdate();
@@ -33,8 +47,19 @@ class Room {
 		}
 		this.game = new Game(this);
 		this.state = "playing";
+		this.winner = undefined;
+		this.loser = undefined;
 		this.emitUpdateToPlayers();
 		
+	}
+
+	endGame(winner, loser) {
+
+		this.game = undefined;
+		this.state = "waiting"
+		this.winner = winner;
+		this.loser = loser;
+		this.emitUpdateToPlayers();
 	}
 
 	playerIds() {
@@ -53,7 +78,9 @@ class Room {
 			id: this.id,
 			state: this.state,
 			game: this.state == 'playing' ? this.game.getSerialState() : undefined,
-			players: this.playerIds()
+			players: this.playerIds(),
+			winner: this.winner,
+			loser: this.loser
 		}
 	}
 
