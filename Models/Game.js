@@ -105,15 +105,9 @@ class Game {
 
 			const bug = hex.bugs[hex.bugs.length-1].bug;
 
-			Hex.forEachNeighbor(this.hexes, hex, (neighbor) => {
-				moves.push({
-						bug: bug,
-						type: 'move',
-						from: hex,
-						to: neighbor,
-						player: this.activePlayer
-					})
-			})
+			moves = moves.concat(Hex.computeBugMoves(this.hexes, hex, bug, this.activePlayer));
+
+			// 
 
 
 

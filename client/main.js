@@ -175,35 +175,51 @@ window.onload = function(){
 
 	
 }
+
+function getState() {
+	socket.emit('getState');
+}
+
+function getDelayedState() {
+	window.setTimeout(getState, 50)
+}
+
 function requestNewId() {
 	socket.emit('requestNewID')
+	getDelayedState();
 }
 
 function newGame() {
-console.log('new game')
-socket.emit('newGame');
+	console.log('new game')
+	socket.emit('newGame');
+	getDelayedState();
 }
 
 function leaveRoom() {
 	console.log('leaveRoom')
-socket.emit('leaveRoom');
+	socket.emit('leaveRoom');
+	getDelayedState();
 }
 function leaveGame() {
 	if(confirm("really forfeit?")) {
 		socket.emit('leaveGame');
+		getDelayedState();
 	}
 }
 
 function joinWithCode() {
-socket.emit('joinRoom', {code: document.getElementById('joinGameCode').value})
+	socket.emit('joinRoom', {code: document.getElementById('joinGameCode').value})
+	getDelayedState();
 }
 
 function submitMove(move) {
-socket.emit('submitMove', move)
+	socket.emit('submitMove', move)
+	getDelayedState();
 
 }
 
 function startGame() {
-socket.emit('startGame');
+	socket.emit('startGame');
+	getDelayedState();
 
 }
