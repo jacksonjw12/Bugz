@@ -82,29 +82,44 @@ class Game {
 	generateBugMoves() {
 		let moves = [];
 
+		/*
+			Strats:
+			Get a list of all the bugs that arent blocked
+			Check if removing them from the board creates an island
+				if true skip
+			Run a bug-specific move generator
+
+		*/
+
 		forEach(this.hexes, (hex) => {
 			if(hex.bugs.length == 0) {
 				return;
 			}
-			console.log("??", hex);
 			if(!Hex.isOwner(hex, this.activePlayer)){
+				return;
+			}
+
+			if(Hex.isChainLink(this.hexes, hex)) {
 				return;
 			}
 
 			const bug = hex.bugs[hex.bugs.length-1].bug;
 
 			Hex.forEachNeighbor(this.hexes, hex, (neighbor) => {
-			moves.push({
-					bug: bug,
-					type: 'move',
-					from: hex,
-					to: neighbor,
-					player: this.activePlayer
-				})
+				moves.push({
+						bug: bug,
+						type: 'move',
+						from: hex,
+						to: neighbor,
+						player: this.activePlayer
+					})
 			})
+
+
 
 		});
 
+		
 		return moves;
 	}
 
@@ -123,7 +138,7 @@ class Game {
 				if(!neighboring.bugs.length) {
 					return;
 				}
-				console.log("checking hex with neighbors, ", neighboring)
+				// console.log("checking hex with neighbors, ", neighboring)
 				const topBug = neighboring.bugs[neighboring.bugs.length-1];
 				const isPlayerBug = topBug.owner == this.activePlayer;
 				if(!isPlayerBug) {
@@ -132,7 +147,7 @@ class Game {
 				}
 				bordersPlayer = true;
 			});
-			console.log({bordersPlayer,bordersOpponent})
+			// console.log({bordersPlayer,bordersOpponent})
 
 			if(bordersPlayer && !bordersOpponent) {
 				forEach(playableBugs, (bug)=>{

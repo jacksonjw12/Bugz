@@ -169,6 +169,7 @@ class Grid {
 			}
 		}
 		this.selectedHex = undefined;
+		this.highlightHexes([]);
 	}
 
 	attemptSelectHex() {

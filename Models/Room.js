@@ -15,6 +15,12 @@ class Room {
 	}
 
 	addPlayer(player) {
+		for(let p = 0; p < this.players.length; p++) {
+			if(this.players[p] == player) {
+				return;
+			}
+		}
+
 		this.players.push(player);
 
 		player.joinRoom(this);
