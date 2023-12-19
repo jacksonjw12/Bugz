@@ -55,36 +55,8 @@ window.onload = function(){
 	});
 
 
-	const onTouch = (touchEvent) => {
-		if(touchEvent.touches.length > 0 && touchState.inTouch) {
-			var touch = touchEvent.touches[0];// || touchEvent.changedTouches[0];
-			
-			const xDiff = mousePos.x - touch.clientX;
-			const yDiff = mousePos.y - touch.clientY;
-
-			camera.centerPoint.x += xDiff;
-			camera.centerPoint.y -= yDiff;
-			mousePos.x = event.clientX;
-			mousePos.y = event.clientY;
-			Grid.getInstance().onMouseMove();
-
-			// requestAnimationFrame(tick);
-			// debounce(resize, 40, false)
-		}
-		if(touchEvent.touches.length == 0) {
-			touchState.inTouch = false;
-			mousePos.x = undefined;
-			mousePos.y = undefined;
-			touchState.touchStartMillis = undefined;
-			return;
-		}
-
-		if(touchEvent.touches.length == 1 && !touchState.inTouch) {
-			touchState.inTouch = true;
-			touchState.touchStartMillis = Date.now();
-		}
-		
-	}
+	
+	//state.id == 'game'
 
 	document.addEventListener("touchmove", (event) => {
 		var touch = event.touches[0];
@@ -102,9 +74,13 @@ window.onload = function(){
 		mousePos.y = touch.clientY;
 		Grid.getInstance().onMouseMove();
 
+		if(state.id == 'game') {
+			event.preventDefault();
+			event.stopImmediatePropagation();
+		}
 
 
-	});
+	}, {passive: false});
 	document.addEventListener("touchstart", (event) => {
 		var touch = event.touches[0];
 
@@ -115,7 +91,12 @@ window.onload = function(){
 		touchState.inTouch = true;
 		touchState.touchStartMillis = Date.now();
 
-	});
+		if(state.id == 'game') {
+			event.preventDefault();
+			event.stopImmediatePropagation();
+		}
+
+	}, {passive: false});
 	document.addEventListener("touchend", (event) => {
 		touchState.inTouch = false;
 
@@ -126,7 +107,12 @@ window.onload = function(){
 		}
 
 		touchState.touchStartMillis = undefined;
-	});
+
+		if(state.id == 'game') {
+			event.preventDefault();
+			event.stopImmediatePropagation();
+		}
+	}, {passive: false});
 
 
 
