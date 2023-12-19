@@ -44,59 +44,110 @@ class Hex {
 	}
 
 
-	// static emptyBFS(hexList, origin, depth) {
-	// 	let visited = [];
-	// 	let list = Hex.cloneHexList(hexList);
-	// 	let initialNeighbors = [];
-	// 	Hex.forEachVisitableNeighbor(list, origin, (n) => {
-			
-	// 		n.seen = true;
-	// 		n.depth = 1;
-	// 		// n.maxDepth = 
-	// 		initialNeighbors.push(n);
-			
-	// 	})
+	static antMoves(hexList, hex, bugType, activePlayer) {
+		let moves = [];
+		let list = Hex.cloneHexList(hexList);
+		// Get origin in cloned list
+		let origin = Hex.find(list, hex);
 
-	// 	if(initialNeighbors.length < 2) {
-	// 		return false;
-	// 	}
+		let initialNeighbors = [];
+		Hex.forEachVisitableNeighbor(list, hex, (n) => {
+			n.seen = true;
+			initialNeighbors.push(n);
+			moves.push({
+				bug: bugType,
+				type: 'move',
+				from: origin,
+				to: n,
+				player: activePlayer
+			})
+		})
 
-	// 	// Get origin in cloned list
-	// 	let origin = Hex.find(list, hex);
+		
+		// Ignore origin
+		origin.seen = true;
+		origin.depth = 0;
 
-	// 	// Ignore origin
-	// 	origin.seen = true;
-	// 	origin.depth = 0;
+		// start at the first neighbor
+		let queue = initialNeighbors;
 
-	// 	// start at the first neighbor
-	// 	let queue = initialNeighbors;
+		while(queue.length) {
+			const visiting = queue.splice(0,1)[0];
+			// console.log({visiting})
 
-	// 	while(queue.length) {
-	// 		const visiting = queue.splice(0,1)[0];
-
-	// 		Hex.forEachVisitableNeighbor(list, visiting, (n) => {
+			Hex.forEachVisitableNeighbor(list, visiting, (n) => {
 				
-	// 			if(!n.seen) {
-	// 				n.seen = true;
-	// 				n.depth = visiting.depth + 1;
-	// 				stack.push(n);
-	// 			}
-	// 			else if(visiting.depth + 1 < n.depth) {
-	// 				n.depth = visiting.depth + 1;
-	// 				queue.push(n);
-	// 			}
-	// 		})
-	// 	}
-	// 	console.log({initialNeighbors})
-	// 	for(let n = 1; n < initialNeighbors.length; n++) {
-	// 		if(!initialNeighbors[n].seen) {
-	// 			return true;
-	// 		}
-	// 	}
+				if(!n.seen) {
+					n.seen = true;
+					queue.push(n);
+					moves.push({
+						bug: bugType,
+						type: 'move',
+						from: origin,
+						to: n,
+						player: activePlayer
+					})
+				}
+			})
+		}
+		
 
-	// 	return false;
+		return moves;
 
-	// }
+	}
+	static spiderMoves(hexList, hex, bugType, activePlayer) {
+		let moves = [];
+		let list = Hex.cloneHexList(hexList);
+		// Get origin in cloned list
+		let origin = Hex.find(list, hex);
+		// Ignore origin
+		origin.seen = true;
+		origin.depth = 0;
+
+		let initialNeighbors = [];
+		Hex.forEachVisitableNeighbor(list, hex, (n) => {
+			n.seen = true;
+			n.depth = 1;
+			initialNeighbors.push(n);
+		})
+
+		let stack = initialNeighbors;
+
+		while(stack.length) {
+			const visiting = stack.pop();
+			const currentDepth = visiting.depth;
+			if(currentDepth == 3) {
+				moves.push({
+					bug: bugType,
+					type: 'move',
+					from: origin,
+					to: visiting,
+					player: activePlayer
+				})
+			}
+			else if(currentDepth < 3){
+				Hex.forEachVisitableNeighbor(list, visiting, (n) => {
+					
+					if(!n.seen) {
+						n.seen = true;
+						n.depth = currentDepth + 1
+						stack.push(n);
+						
+					} else if(n.depth > currentDepth + 1) {
+						// reconsider
+						n.depth = currentDepth + 1;
+						stack.push(n);
+					}
+				})
+			}
+
+			
+		}
+		
+
+		return moves;
+
+	}
 
 	static genericBugMoves(hexList, hex, bugType, activePlayer) {
 		let moves = [];
@@ -149,16 +200,16 @@ class Hex {
 			return Hex.beeMoves(hexList, hex, bugType, activePlayer);
 
 		} else if(bugType == "🕷") {
-			return Hex.genericBugMoves(hexList, hex, bugType, activePlayer);
+			return Hex.spiderMoves(hexList, hex, bugType, activePlayer);
 
 		} else if(bugType == "🐜") {
-			return Hex.genericBugMoves(hexList, hex, bugType, activePlayer);
+			return Hex.antMoves(hexList, hex, bugType, activePlayer);
 			
 		} else if(bugType == "🐞") {
 			return Hex.beetleMoves(hexList, hex, bugType, activePlayer);
 			
 		} else if(bugType == "🦗") {
-			return Hex.genericBugMoves(hexList, hex, bugType, activePlayer);
+			return []//Hex.genericBugMoves(hexList, hex, bugType, activePlayer);
 			
 		}
 	}
@@ -256,23 +307,32 @@ class Hex {
 		return false;
 	}
 
+	static hasBugs(hex) {
+		return !!(hex.bugs && hex.bugs.length);
+	}
+
 	static forEachVisitableNeighbor(hexlist, hex, condition, options={}) {
+		console.log({forEachVisitableNeighbor: hex})
 		let neighbors = Hex.generateNeighborCoords(hex);
 		let foundNeighbors = [];
 		let hasBugs = []; // clockwise
-		for(let h = 0; h < hexlist.length; h++) {
-			if(Hex.in(neighbors, hexlist[h])) {
-				foundNeighbors.push(hexlist[h]);
-				
-				hasBugs.push(!!hexlist[h].bugs.length);
-				
-				
+
+		for(let hn = 0; hn < neighbors.length; hn++) {
+			let neighbor = Hex.find(hexlist, neighbors[hn]);
+
+			console.log({neighbor, neighborCoord: neighbors[hn]})
+			
+			if(neighbor === undefined) {
+				continue;
 			}
+			foundNeighbors.push(neighbor);
+			hasBugs.push(Hex.hasBugs(neighbor));
 		}
+		
 		if(foundNeighbors.length !== 6) {
 			console.log("missing hex tiles from search");
-			condition(undefined);
-			return;
+			// condition(undefined);
+			// return;
 		}
 
 		for(let n = 0; n < foundNeighbors.length; n++) {

@@ -33,7 +33,7 @@ const testGameState = (playerId1="7150C3", playerId2="38A706") => {
                 "bugs": [
                     {
                         "bug": "🕷",
-                        "owner": playerId2
+                        "owner": playerId1
                     }
                 ]
             },
