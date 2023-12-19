@@ -42,7 +42,7 @@ const testGameState = (playerId1="7150C3", playerId2="38A706") => {
                 "y": -1,
                 "bugs": [
                     {
-                        "bug": "🐜",
+                        "bug": "🦗",
                         "owner": playerId1
                     }
                 ]

@@ -149,6 +149,44 @@ class Hex {
 
 	}
 
+	static grasshopperMoves(hexList, hex, bugType, activePlayer) {
+		
+		let moves = [];
+		const traverseDirection = (startHex, direction) => {
+			let emptyFound = false;
+			let curHex = startHex;
+			while(!emptyFound) {
+				//advance curHex in direction
+				let neighborCoords = Hex.generateNeighborCoords(curHex);
+
+				let neighborDirection = neighborCoords[direction];
+				console.log({neighborCoords, neighborDirection, direction});
+				curHex = Hex.find(hexList, neighborDirection);
+				console.log({curHex});
+
+				// check empty
+				emptyFound = !curHex.bugs.length;
+			}
+			return curHex;
+		}
+
+		Hex.forEachNeighbor(hexList, hex, (neighbor, i) => {
+			if(neighbor.bugs.length) {
+				console.log("grasshopper checking for: ", neighbor);
+				const finalHex = traverseDirection(neighbor, i)
+				moves.push({
+					bug: bugType,
+					type: 'move',
+					from: hex,
+					to: finalHex,
+					player: activePlayer
+				})
+			}
+			
+		})
+		return moves;
+	}
+
 	static genericBugMoves(hexList, hex, bugType, activePlayer) {
 		let moves = [];
 
@@ -209,7 +247,7 @@ class Hex {
 			return Hex.beetleMoves(hexList, hex, bugType, activePlayer);
 			
 		} else if(bugType == "🦗") {
-			return []//Hex.genericBugMoves(hexList, hex, bugType, activePlayer);
+			return Hex.grasshopperMoves(hexList, hex, bugType, activePlayer);
 			
 		}
 	}
@@ -256,7 +294,7 @@ class Hex {
 				}
 			})
 		}
-		console.log({initialNeighbors})
+		// console.log({initialNeighbors})
 		for(let n = 1; n < initialNeighbors.length; n++) {
 			if(!initialNeighbors[n].seen) {
 				return true;
@@ -312,7 +350,7 @@ class Hex {
 	}
 
 	static forEachVisitableNeighbor(hexlist, hex, condition, options={}) {
-		console.log({forEachVisitableNeighbor: hex})
+		// console.log({forEachVisitableNeighbor: hex})
 		let neighbors = Hex.generateNeighborCoords(hex);
 		let foundNeighbors = [];
 		let hasBugs = []; // clockwise
@@ -320,7 +358,7 @@ class Hex {
 		for(let hn = 0; hn < neighbors.length; hn++) {
 			let neighbor = Hex.find(hexlist, neighbors[hn]);
 
-			console.log({neighbor, neighborCoord: neighbors[hn]})
+			// console.log({neighbor, neighborCoord: neighbors[hn]})
 			
 			if(neighbor === undefined) {
 				continue;
@@ -352,7 +390,7 @@ class Hex {
 			//Check if its floating
 			let anyBugNeighbors = false;
 			Hex.forEachNeighbor(hexlist, foundNeighbors[n], (subNeighbor) => {
-				console.log({subNeighbor});
+				// console.log({subNeighbor});
 				if(hex.bugs.length < 2 && Hex.is(subNeighbor, hex)) {
 					console.log("should be at least once for each offered move")
 					return;
@@ -379,11 +417,13 @@ class Hex {
 	static forEachNeighbor(hexlist, hex, condition) {
 		let neighbors = Hex.generateNeighborCoords(hex);
 		for(let h = 0; h < hexlist.length; h++) {
-			if(Hex.in(neighbors, hexlist[h])) {
-				// console.log("checking neighbor", hexlist[h]);
-				let returnEarly = condition(hexlist[h])
-				if(returnEarly) {
-					return;
+
+			for(let n = 0; n < neighbors.length; n++) {
+				if(Hex.is(neighbors[n], hexlist[h])) {
+					let returnEarly = condition(hexlist[h], n)
+					if(returnEarly) {
+						return;
+					}
 				}
 			}
 		}
