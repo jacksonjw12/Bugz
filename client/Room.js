@@ -11,5 +11,22 @@ class Room {
 
 
 		document.getElementById('startButton').style.display = (roomState.players.length > 1) ? 'block' : 'none';
+
+
+		if(roomState.winner) {
+			document.getElementById('winner').innerHTML = `Winner: <span style='color:#${roomState.winner}'>${roomState.winner}</span>`
+			document.getElementById('winner').style.display = 'block';
+		}
+		else {
+			document.getElementById('winner').style.display = 'none';
+		}
+		if(roomState.loser) {
+			document.getElementById('loser').innerHTML = `Loser: <span style='color:#${roomState.loser}'>${roomState.loser}</span>`
+
+			document.getElementById('loser').style.display = 'block';
+		}
+		else {
+			document.getElementById('loser').style.display = 'none';
+		}
 	}
 }

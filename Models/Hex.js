@@ -368,7 +368,7 @@ class Hex {
 		}
 		
 		if(foundNeighbors.length !== 6) {
-			console.log("missing hex tiles from search");
+			// console.log("missing hex tiles from search");
 			// condition(undefined);
 			// return;
 		}
@@ -392,7 +392,7 @@ class Hex {
 			Hex.forEachNeighbor(hexlist, foundNeighbors[n], (subNeighbor) => {
 				// console.log({subNeighbor});
 				if(hex.bugs.length < 2 && Hex.is(subNeighbor, hex)) {
-					console.log("should be at least once for each offered move")
+					// console.log("should be at least once for each offered move")
 					return;
 				}
 
@@ -429,6 +429,52 @@ class Hex {
 		}
 
 	}
+
+
+	static checkLoseCondition(hexlist) {
+		// Find all the bees
+
+
+		// Check to see if a bee is surrounded
+
+		// If players == 2, the other player wins
+
+		let bees = [];
+		let owners = []
+		for(let h = 0; h < hexlist.length; h++) {
+			const hex = hexlist[h];
+			if(hex.bugs) {
+				for(let b = 0; b < hex.bugs.length; b++) {
+					if(hex.bugs[b].bug == "🐝") {
+						bees.push(hex);
+						owners.push(hex.bugs[b].owner)
+						break;
+					}
+				}
+			}
+
+		
+		}
+
+		for(let b = 0; b < bees.length; b++) {
+			console.log({beeCheck: bees[b], b})
+			let freeNeighbor = false;
+
+			Hex.forEachNeighbor(hexlist, bees[b], (neighbor) => {
+				if(!neighbor.bugs.length) {
+					freeNeighbor = true;
+					return true;
+				}
+			})
+
+			if(!freeNeighbor) {
+				return owners[b];
+			}
+		}
+
+
+	}
+
 }
 
 exports.Hex = Hex;

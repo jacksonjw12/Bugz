@@ -21,8 +21,8 @@ h1 {text-align:center; width:100%;}
   margin-bottom:0;
 }
 .intro > button {
-  padding:2rem;
-  max-width:80%;
+  padding:1rem;
+  max-width:95%;
   margin-bottom:2rem;
   font-size:5rem;
   border: 1px solid black;
@@ -49,6 +49,14 @@ h1 {text-align:center; width:100%;}
 
 }
 
+#winner {
+  margin-top:0;
+  margin-bottom:0;
+}
+#loser {
+  margin-top:0;
+  margin-bottom:0;
+}
 
 .intro > hr {
   width:50%;
@@ -137,6 +145,9 @@ h1 {text-align:center; width:100%;}
   font-size:2rem;
 }
 
+.waitingRoom > h2 {
+  margin-bottom:0;
+}
 
 .hiddenBug {
   background-color:white;

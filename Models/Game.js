@@ -268,6 +268,7 @@ class Game {
 			bugs: this.bugs,
 			round: this.round,
 			turn: this.turn,
+			finished: this.finished
 		}
 	}
 
@@ -323,9 +324,28 @@ class Game {
 
 			}
 
+			const loser = Hex.checkLoseCondition(this.hexes);
+			if(loser != undefined) {
+
+				this.loser = loser;
+				for(let p = 0; p < this.playerIds.length; p++) {
+					if(this.playerIds[p] != loser) {
+						this.winner = this.playerIds[p];
+						break;
+					}
+				}
+				this.finished = true;
+
+				this.room.endGame(this.winner,this.loser);
+
+				
+			}
+			else {
+				this.nextTurn();
+			}
 
 
-			this.nextTurn();
+			
 		}
 		
 	}
