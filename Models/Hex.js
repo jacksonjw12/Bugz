@@ -436,6 +436,7 @@ class Hex {
 		for(let h = 0; h < hexlist.length; h++) {
 			const hex = hexlist[h];
 			if(hex.bugs) {
+				console.log({hexBugs: hex.bugs})
 				for(let b = 0; b < hex.bugs.length; b++) {
 					if(hex.bugs[b].bug == "🐝") {
 						bees.push(hex);

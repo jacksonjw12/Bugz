@@ -34,7 +34,10 @@
   <script src="/socket.io/socket.io.js"></script>
 
 
+
     <script src="utils.js"></script>
+    <script src="Overlay.js"></script>
+
     <script src="Grid.js"></script>
     <script src="Room.js"></script>
 
@@ -161,9 +164,14 @@ window.onload = function(){
   document.addEventListener("touchend", (event) => {
     touchState.inTouch = false;
 
+    var touch = event.touches[0];
+
+    mousePos.x = touch.clientX;
+    mousePos.y = touch.clientY;
     const mouseDownTime = Date.now() - touchState.touchStartMillis;
 
     if(mouseDownTime < 250) {
+      // alert('onClick');
       Grid.getInstance().onClick();
     }
 
@@ -181,9 +189,28 @@ window.onload = function(){
     }
   });
 
+
+
   socket.emit('setupTestState');
    
 }
+
+
+function submitMove(move) {
+  socket.emit('submitMove', move)
+  getDelayedState();
+
+}
+
+
+function getState() {
+  socket.emit('getState');
+}
+
+function getDelayedState() {
+  window.setTimeout(getState, 50)
+}
+
 
     </script>
 </html>

@@ -100,9 +100,13 @@ class Grid {
 
 	attemptSubmitMoveMove() {
 		console.log('attemptSubmitMoveMove')
+
+
 		for(let m = 0; m < this.state.validNextMoves.length; m++) {
 			if(this.state.validNextMoves[m].type == 'move' && Hex.is(this.state.validNextMoves[m].from, this.selectedHex)) {
+				alert(`Submit1 to: ${Hex.is(this.state.validNextMoves[m].to, this.focusedHex)} , highlight: ${this.focusedHex.highlight}`);
 				if(Hex.is(this.state.validNextMoves[m].to, this.focusedHex) && this.focusedHex.highlight) {
+					alert(`Submit2 X: ${this.focusedHex.x} | Y: ${this.focusedHex.y}`);
 					submitMove(this.state.validNextMoves[m])
 					return;
 				}
@@ -146,6 +150,7 @@ class Grid {
 			this.attemptSubmitMoveMove();
 			return;
 		}
+		// alert('selectHex');
 		this.attemptSelectHex();
 		this.queueRender();
 		
