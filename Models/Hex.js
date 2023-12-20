@@ -97,53 +97,46 @@ class Hex {
 	}
 	static spiderMoves(hexList, hex, bugType, activePlayer) {
 		let moves = [];
-		let list = Hex.cloneHexList(hexList);
-		// Get origin in cloned list
-		let origin = Hex.find(list, hex);
-		// Ignore origin
-		origin.seen = true;
-		origin.depth = 0;
-
-		let initialNeighbors = [];
-		Hex.forEachVisitableNeighbor(list, hex, (n) => {
-			n.seen = true;
-			n.depth = 1;
-			initialNeighbors.push(n);
+		
+		
+		let initialNeighbors = new Set()
+		Hex.forEachVisitableNeighbor(hexList, hex, (n) => {
+			initialNeighbors.add(n);
 		})
 
-		let stack = initialNeighbors;
 
-		while(stack.length) {
-			const visiting = stack.pop();
-			const currentDepth = visiting.depth;
-			if(currentDepth == 3) {
-				moves.push({
-					bug: bugType,
-					type: 'move',
-					from: origin,
-					to: visiting,
-					player: activePlayer
-				})
-			}
-			else if(currentDepth < 3){
-				Hex.forEachVisitableNeighbor(list, visiting, (n) => {
-					
-					if(!n.seen) {
-						n.seen = true;
-						n.depth = currentDepth + 1
-						stack.push(n);
-						
-					} else if(n.depth > currentDepth + 1) {
-						// reconsider
-						n.depth = currentDepth + 1;
-						stack.push(n);
-					}
-				})
-			}
 
-			
+		const exploreNextSet = (atHex, cameFromHex, setToAdd) => {
+			Hex.forEachVisitableNeighbor(hexList, atHex, (n) => {
+				
+				if(Hex.is(cameFromHex, n)) {
+					return;
+				}
+				setToAdd.add(n);
+			}, {floatingOrigin: hex});
 		}
 		
+
+		let depth3Neighbors = new Set();
+		initialNeighbors.forEach((initialNeighbor) => {
+			let depth2 = new Set();
+			exploreNextSet(initialNeighbor, hex, depth2);
+
+			depth2.forEach((secondaryNeighbor) => {
+				exploreNextSet(secondaryNeighbor, initialNeighbor, depth3Neighbors);
+			})
+		})
+			
+		
+		depth3Neighbors.forEach((depth3Neighbor) => {
+			moves.push({
+				bug: bugType,
+				type: 'move',
+				from: hex,
+				to: depth3Neighbor,
+				player: activePlayer
+			})
+		})
 
 		return moves;
 
@@ -389,10 +382,9 @@ class Hex {
 			
 			//Check if its floating
 			let anyBugNeighbors = false;
+			let floatingOrigin = options.floatingOrigin ? options.floatingOrigin : hex;
 			Hex.forEachNeighbor(hexlist, foundNeighbors[n], (subNeighbor) => {
-				// console.log({subNeighbor});
-				if(hex.bugs.length < 2 && Hex.is(subNeighbor, hex)) {
-					// console.log("should be at least once for each offered move")
+				if(floatingOrigin.bugs.length < 2 && Hex.is(subNeighbor, floatingOrigin)) {
 					return;
 				}
 
@@ -406,7 +398,7 @@ class Hex {
 				continue;
 			}
 
-			let returnEarly = condition(foundNeighbors[n])
+			let returnEarly = condition(foundNeighbors[n], n)
 			if(returnEarly) {
 				return;
 			}

@@ -170,7 +170,7 @@ h1 {text-align:center; width:100%;}
   line-height:4vw;
   border-radius:50%;
   z-index:-1;
-  top:-2vw;
+  top:0;
   background-color:orange;
   user-select:none;
 

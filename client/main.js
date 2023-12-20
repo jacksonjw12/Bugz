@@ -127,6 +127,15 @@ window.onload = function(){
 		}
 	});
 
+	socket.on("connect", () => {
+	  getState();
+	});
+
+	socket.on("disconnect", () => {
+	  console.log("disconnect");
+	  getDelayedState();
+	});
+
 	let blurManualRequestInterval = 5000;
 	let blurLoop = undefined;
 
@@ -138,9 +147,6 @@ window.onload = function(){
 		window.clearInterval(blurLoop);
    		socket.emit('getState');
 	}, false);
-
-	 
-
 
 	
 }
