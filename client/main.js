@@ -4,6 +4,26 @@ const camera = {
 	zoom: 1
 }
 
+
+
+let trackers = [undefined, undefined, undefined, undefined]
+
+function flashIndicator(id) {
+
+	console.log(`flash ${id}`)
+	if(trackers[id]) {
+		window.clearTimeout(trackers[id]);
+		trackers[id] = undefined;
+	}
+	document.getElementById(`indicator${id}`).style.opacity = '1.0';
+	trackers[id] = window.setTimeout(() => {
+		document.getElementById(`indicator${id}`).style.opacity = '0.0';
+		trackers[id] = undefined;
+	}, 500)
+
+}
+
+
 window.onload = function(){
 	Grid.getInstance();
 
@@ -120,6 +140,8 @@ window.onload = function(){
 	socket = io();
 	socket.on('state', function(newState) {
 		console.log({newState});
+		flashIndicator(2);
+
 		updateState(newState);
 		if(newState.room && newState.room.game) {
 			Grid.getInstance().applyNewGameState(newState.room.game);
@@ -128,11 +150,14 @@ window.onload = function(){
 	});
 
 	socket.on("connect", () => {
+		
+	flashIndicator(3);
 	  getState();
 	});
 
 	socket.on("disconnect", () => {
 	  console.log("disconnect");
+	  flashIndicator(4);
 	  getDelayedState();
 	});
 
@@ -151,12 +176,16 @@ window.onload = function(){
 	
 }
 
+
+
 function getState() {
 	socket.emit('getState');
+	flashIndicator(1);
 }
 
 function getDelayedState() {
 	window.setTimeout(getState, 50)
+
 }
 
 function requestNewId() {

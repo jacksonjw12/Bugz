@@ -54,7 +54,7 @@ class Grid {
 		}
 
 
-
+		console.log({whatState: this.state, focusedBug: this.focusedBug});
 		Overlay.applyGameState(this.state, this.focusedBug);
 
 		this.queueRender();
@@ -100,7 +100,6 @@ class Grid {
 
 	attemptSubmitMoveMove() {
 		console.log('attemptSubmitMoveMove')
-
 
 		for(let m = 0; m < this.state.validNextMoves.length; m++) {
 			if(this.state.validNextMoves[m].type == 'move' && Hex.is(this.state.validNextMoves[m].from, this.selectedHex)) {
@@ -151,7 +150,7 @@ class Grid {
 			return;
 		}
 		// alert('selectHex');
-		this.attemptSelectHex();
+		// this.attemptSelectHex();
 		this.queueRender();
 		
 	}

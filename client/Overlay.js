@@ -2,17 +2,17 @@ class Overlay {
 
 	static applyGameState(state, focusedBug) {
 		const playing = state.activePlayer == userId;
-		console.log("playing: ", state.activePlayer, userId)
+		console.log({focusedBug, playing})
 
-		if(Overlay.lastTurn == state.turn) {
-			return;
-		}
+		
 		Overlay.lastTurn = state.turn;
 
 		if(playing) {
 			document.getElementById("turnIndicator").innerHTML = "Your turn"
 			document.getElementById("turnIndicator").style.background = "gold";
+			console.log("showaddOptions");
 			Overlay.showAddOptions(state,focusedBug);
+
 			document.getElementById("bugButtons").style.display = "flex"
 		}
 		else {
@@ -46,25 +46,27 @@ class Overlay {
 			}
 		})
 
+		console.log({beeCheck: (focusedBug == '🐝' ? 'selected' : 'nope')})
+
 		
 		document.getElementById('bugButtons').innerHTML = `
-		<div id="🐝Button" onClick="Grid.instance.focusBug('🐝')" class="bugButton ${ !addableBugs.has('🐝') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐝' ? 'selected' : ''}" ${bugsOwned['🐝'] == 0 ? 'style="display:none;"' : ''} >
+		<div id="🐝Button" onClick="event.preventDefault(); Grid.getInstance().focusBug('🐝')" class="bugButton ${ !addableBugs.has('🐝') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐝' ? 'selected' : ''}" ${bugsOwned['🐝'] == 0 ? 'style="display:none;"' : ''} >
             <div id="🐝Amount" class="numBugs ${ !addableBugs.has('🐝') ? 'hiddenBug' : ''}">${bugsOwned['🐝']}</div>
             <div class="bug ${ !addableBugs.has('🐝') ? 'hiddenBug' : ''}">🐝</div>
         </div>
-        <div id="🕷Button" onClick="Grid.instance.focusBug('🕷')" class="bugButton ${ !addableBugs.has('🕷') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🕷' ? 'selected' : ''}" ${bugsOwned['🕷'] == 0 ? 'style="display:none;"' : ''}>
+        <div id="🕷Button" onClick="event.preventDefault(); Grid.getInstance().focusBug('🕷')" class="bugButton ${ !addableBugs.has('🕷') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🕷' ? 'selected' : ''}" ${bugsOwned['🕷'] == 0 ? 'style="display:none;"' : ''}>
             <div id="🕷Amount" class="numBugs ${ !addableBugs.has('🕷') ? 'hiddenBug' : ''}">${bugsOwned['🕷']}</div>
             <div class="bug ${ !addableBugs.has('🕷') ? 'hiddenBug' : ''}">🕷️</div>
         </div>
-        <div id="🐜Button" onClick="Grid.instance.focusBug('🐜')" class="bugButton ${ !addableBugs.has('🐜') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐜' ? 'selected' : ''}" ${bugsOwned['🐜'] == 0 ? 'style="display:none;"' : ''}>
+        <div id="🐜Button" onClick="event.preventDefault(); Grid.getInstance().focusBug('🐜')" class="bugButton ${ !addableBugs.has('🐜') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐜' ? 'selected' : ''}" ${bugsOwned['🐜'] == 0 ? 'style="display:none;"' : ''}>
             <div id="🐜Amount" class="numBugs ${ !addableBugs.has('🐜') ? 'hiddenBug' : ''}">${bugsOwned['🐜']}</div>
             <div class="bug ${ !addableBugs.has('🐜') ? 'hiddenBug' : ''}">🐜</div>
             </div>
-        <div id="🐞Button" onClick="Grid.instance.focusBug('🐞')" class="bugButton ${ !addableBugs.has('🐞') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐞' ? 'selected' : ''}" ${bugsOwned['🐞'] == 0 ? 'style="display:none;"' : ''}>
+        <div id="🐞Button" onClick="event.preventDefault(); Grid.getInstance().focusBug('🐞')" class="bugButton ${ !addableBugs.has('🐞') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🐞' ? 'selected' : ''}" ${bugsOwned['🐞'] == 0 ? 'style="display:none;"' : ''}>
             <div id="🐞Amount" class="numBugs ${ !addableBugs.has('🐞') ? 'hiddenBug' : ''}">${bugsOwned['🐞']}</div>
             <div class="bug ${ !addableBugs.has('🐞') ? 'hiddenBug' : ''}">🐞</div>
             </div>
-        <div id="🦗Button" onClick="Grid.instance.focusBug('🦗')" class="bugButton ${ !addableBugs.has('🦗') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🦗' ? 'selected' : ''}" ${bugsOwned['🦗'] == 0 ? 'style="display:none;"' : ''}>
+        <div id="🦗Button" onClick="event.preventDefault(); Grid.getInstance().focusBug('🦗')" class="bugButton ${ !addableBugs.has('🦗') ? 'hiddenBugContainer' : ''} ${ focusedBug == '🦗' ? 'selected' : ''}" ${bugsOwned['🦗'] == 0 ? 'style="display:none;"' : ''}>
             <div id="🦗Amount" class="numBugs ${ !addableBugs.has('🦗') ? 'hiddenBug' : ''}">${bugsOwned['🦗']}</div>
             <div class="bug ${ !addableBugs.has('🦗') ? 'hiddenBug' : ''}">🦗</div>
         </div>
