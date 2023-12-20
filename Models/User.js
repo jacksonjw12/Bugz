@@ -6,6 +6,10 @@ class User {
 		this.room = undefined;
 	}
 
+	updateSocket(socket) {
+		this.socket = socket;
+	}
+	
 	// change user color
 	newID(cb) {
 		if(this.room) {

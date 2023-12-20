@@ -78,7 +78,11 @@ window.onload = function(){
 	
 	//state.id == 'game'
 
-	document.addEventListener("touchmove", (event) => {
+	canvas.el.addEventListener("touchmove", (event) => {
+
+		if(event.touches.length != 1) {
+			return;
+		}
 		var touch = event.touches[0];
 		if(touchState.inTouch) {
 			const xDiff = mousePos.x - touch.clientX;
@@ -94,32 +98,54 @@ window.onload = function(){
 		mousePos.y = touch.clientY;
 		Grid.getInstance().onMouseMove();
 
-		if(state.id == 'game') {
-			event.preventDefault();
-			event.stopImmediatePropagation();
-		}
+		
+		event.preventDefault();
+		event.stopImmediatePropagation();
+		
+
+		
 
 
 	}, {passive: false});
-	document.addEventListener("touchstart", (event) => {
+	canvas.el.addEventListener("touchstart", (event) => {
+		if(event.touches.length != 1) {
+			return;
+		}
 		var touch = event.touches[0];
+
 
 		if(!touchState.inTouch) {
 			mousePos.x = touch.clientX;
 			mousePos.y = touch.clientY;
+			Grid.getInstance().onMouseMove();
 		}
+		// alert('touchStart' + (touchState.inTouch ? 'yes' : 'no'))
 		touchState.inTouch = true;
 		touchState.touchStartMillis = Date.now();
 
-		if(state.id == 'game') {
-			event.preventDefault();
-			event.stopImmediatePropagation();
-		}
+		
+		event.preventDefault();
+		event.stopImmediatePropagation();
+		
 
 	}, {passive: false});
-	document.addEventListener("touchend", (event) => {
-		touchState.inTouch = false;
+	canvas.el.addEventListener("touchend", (event) => {
+		// if(event.touches.length != 1) {
+		// 	return;
+		// }
+		
+		if(!touchState.inTouch) {
+			return;
+		}
+		// alert('touchEnd')
+		var touch = event.touches[0];
 
+		
+		// mousePos.x = touch.clientX;
+		// mousePos.y = touch.clientY;
+		
+
+		touchState.inTouch = false;
 		const mouseDownTime = Date.now() - touchState.touchStartMillis;
 
 		if(mouseDownTime < 250) {
@@ -128,10 +154,10 @@ window.onload = function(){
 
 		touchState.touchStartMillis = undefined;
 
-		if(state.id == 'game') {
-			event.preventDefault();
-			event.stopImmediatePropagation();
-		}
+		
+		event.preventDefault();
+		event.stopImmediatePropagation();
+		
 	}, {passive: false});
 
 

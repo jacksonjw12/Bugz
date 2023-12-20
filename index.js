@@ -39,6 +39,7 @@ console.log(socket.handshake.session.userdata);
   	socket.handshake.session.save();
   }
   const user = User.get(socket.handshake.session.userdata);
+  user.updateSocket(socket);
 
   socket.emit('state', user.getSerialState());
 
