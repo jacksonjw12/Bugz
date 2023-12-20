@@ -112,6 +112,7 @@ class Room {
 	}
 
 	static get(id) {
+		id = id.toUpperCase();
 		for(let i = 0; i< Room.instances.length; i++){
 			if(Room.instances[i].id === id) {
 				
