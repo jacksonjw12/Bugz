@@ -29,17 +29,26 @@ io.use(sharedsession(session, cookies, {
     autoSave:true
 }));
 
+const connectedSockets = new Set();
+
 
 io.on('connection', (socket) => {
 
 console.log(socket.handshake.session.userdata);
-  if(!socket.handshake.session.userdata) {
-  	const newUser = User.newUser(socket);
-  	socket.handshake.session.userdata = newUser.id;
+
+  let user;
+  if(socket.handshake.session.userdata) {
+    user = User.get(socket.handshake.session.userdata);
+  }
+
+  if(!socket.handshake.session.userdata || !user) {
+  	user = User.newUser(socket);
+  	socket.handshake.session.userdata = user.id;
   	socket.handshake.session.save();
   }
-  const user = User.get(socket.handshake.session.userdata);
+  
   user.updateSocket(socket);
+  connectedSockets.add(socket);
 
   socket.emit('state', user.getSerialState());
 
@@ -106,6 +115,8 @@ console.log(socket.handshake.session.userdata);
 
 
   socket.on('disconnect', () => {
+    
+    connectedSockets.delete(socket);
     User.logoutUser(socket.handshake.session.userdata);
     delete socket.handshake.session.userdata;
   });
@@ -118,6 +129,16 @@ app.get('/test', function(req, res){
   res.sendFile(__dirname + '/client/test.html');
 });
 
+app.get('/reset', function(req, res){
+  User.instances = []
+  Room.instances = [];
+
+  Array.from(connectedSockets).forEach(function(s) {
+      s.disconnect(true);
+  });
+
+  res.json({reset:true});
+});
 
 server.listen(3000, () => {
   console.log('listening on *:3000');
