@@ -1,18 +1,18 @@
 
 
-function makeId() {
+function makeId(len=6) {
     let text = "";
     let possible = "ABCDE0123456789";
-    for( let i=0; i < 6; i++ )
+    for( let i=0; i < len; i++ )
         text += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return text;
 }
 
-function makeUniqueId(idList){
+function makeUniqueId(idList, len){
 	let foundGoodId = false;
 	while(!foundGoodId){
-		let id = makeId();
+		let id = makeId(len);
 		let isBad = false;
 		for(let i = 0; i< idList.length; i++){
 			if (idList[i].id === id){

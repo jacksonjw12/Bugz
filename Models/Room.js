@@ -104,7 +104,7 @@ class Room {
 			Room.instances = [];
 		}
 
-		const id = makeUniqueId(Room.instances);
+		const id = makeUniqueId(Room.instances, 3);
 
 		const r = new Room(id, userInitiator);
 		Room.instances.push(r);
