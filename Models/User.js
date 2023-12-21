@@ -57,6 +57,9 @@ class User {
 	}
 
 	static get(id) {
+		if (!User.instances) {
+			User.instances = [];
+		}
 		for(let i = 0; i< User.instances.length; i++){
 			if(User.instances[i].id === id) {
 				
@@ -66,6 +69,9 @@ class User {
 	}
 
 	static logoutUser(user) {
+		if (!User.instances) {
+			User.instances = [];
+		}
 		for(let i = 0; i< User.instances.length; i++){
 			if(User.instances[i] == user) {
 				User.instances.splice(i,1);
