@@ -6,23 +6,6 @@ const camera = {
 
 
 
-let trackers = [undefined, undefined, undefined, undefined]
-
-function flashIndicator(id) {
-
-	console.log(`flash ${id}`)
-	if(trackers[id]) {
-		window.clearTimeout(trackers[id]);
-		trackers[id] = undefined;
-	}
-	document.getElementById(`indicator${id}`).style.opacity = '1.0';
-	trackers[id] = window.setTimeout(() => {
-		document.getElementById(`indicator${id}`).style.opacity = '0.0';
-		trackers[id] = undefined;
-	}, 500)
-
-}
-
 
 window.onload = function(){
 	Grid.getInstance();
@@ -199,6 +182,9 @@ window.onload = function(){
    		socket.emit('getState');
 	}, false);
 
+
+	let forceReloadInterval = 10000;
+	window.setInterval(getState, forceReloadInterval);
 	
 }
 

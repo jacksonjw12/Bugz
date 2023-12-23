@@ -3,7 +3,7 @@
   <head>
     <title>🐝Bugz🐝</title>
     <link rel="stylesheet" type="text/css" href="index.css">
-   
+      <meta name="viewport" content="width=device-width, initial-scale=0.3, minimum-scale=0.3, maximum-scale=0.3" />
   </head>
   <body>
     <div class="indicators">  
@@ -123,14 +123,45 @@
 
   }
 
+
+  let trackers = [undefined,undefined, undefined, undefined, undefined]
+
+  function flashIndicator(id) {
+
+    console.log(`flash ${id}`)
+    if(trackers[id]) {
+      window.clearTimeout(trackers[id]);
+      trackers[id] = undefined;
+    }
+    const trackerEl = document.getElementById(`indicator${id}`);
+
+    if(!trackerEl) {
+      console.log("tracker id not found");
+      return;
+    }
+    trackerEl.style.opacity = '1.0';
+    trackers[id] = window.setTimeout(() => {
+      trackerEl.style.opacity = '0.0';
+      trackers[id] = undefined;
+    }, 500)
+
+  }
+
+
+
   function zoomOutMobile() {
     var viewport = document.querySelector('meta[name="viewport"]');
-
+    const appliedScale = 1 - Math.random()*0.01;
     if ( viewport ) {
-      viewport.content = "initial-scale=0.1";
-      viewport.content = "width=1200";
+      viewport.setAttribute('content', `width=device-width, initial-scale=${0.3 + appliedScale}, minimum-scale=0.3, maximum-scale=0.3`);
+      flashIndicator(3);
     }
   }
+
+  zoomOutMobile();
+
+  // window.setInterval(zoomOutMobile, 2000);
+
 
   
   </script>
