@@ -73,7 +73,8 @@ class Grid {
 			this.hexes = state.hexes;
 		}
 		this.state = state;
-		
+	  	zoomOutMobile();
+
 		
 		Overlay.applyGameState(state, this.focusedBug);
 

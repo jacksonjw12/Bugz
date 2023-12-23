@@ -44,7 +44,7 @@ class Hex {
 	}
 
 
-	static antMoves(hexList, hex, bugType, activePlayer) {
+	static antMoves(hexList, hex, bugType, activePlayer, turn) {
 		let moves = [];
 		let list = Hex.cloneHexList(hexList);
 		// Get origin in cloned list
@@ -58,6 +58,7 @@ class Hex {
 				bug: bugType,
 				type: 'move',
 				from: origin,
+				turn,
 				to: n,
 				player: activePlayer
 			})
@@ -84,6 +85,7 @@ class Hex {
 						bug: bugType,
 						type: 'move',
 						from: origin,
+						turn,
 						to: n,
 						player: activePlayer
 					})
@@ -95,7 +97,7 @@ class Hex {
 		return moves;
 
 	}
-	static spiderMoves(hexList, hex, bugType, activePlayer) {
+	static spiderMoves(hexList, hex, bugType, activePlayer, turn) {
 		let moves = [];
 		
 		
@@ -133,6 +135,7 @@ class Hex {
 				bug: bugType,
 				type: 'move',
 				from: hex,
+				turn,
 				to: depth3Neighbor,
 				player: activePlayer
 			})
@@ -142,7 +145,7 @@ class Hex {
 
 	}
 
-	static grasshopperMoves(hexList, hex, bugType, activePlayer) {
+	static grasshopperMoves(hexList, hex, bugType, activePlayer, turn) {
 		
 		let moves = [];
 		const traverseDirection = (startHex, direction) => {
@@ -171,6 +174,7 @@ class Hex {
 					bug: bugType,
 					type: 'move',
 					from: hex,
+					turn,
 					to: finalHex,
 					player: activePlayer
 				})
@@ -180,7 +184,7 @@ class Hex {
 		return moves;
 	}
 
-	static genericBugMoves(hexList, hex, bugType, activePlayer) {
+	static genericBugMoves(hexList, hex, bugType, activePlayer, turn) {
 		let moves = [];
 
 		Hex.forEachNeighbor(hexList, hex, (neighbor) => {
@@ -188,6 +192,7 @@ class Hex {
 					bug: bugType,
 					type: 'move',
 					from: hex,
+					turn,
 					to: neighbor,
 					player: activePlayer
 				})
@@ -195,7 +200,7 @@ class Hex {
 		return moves;
 	}
 
-	static beeMoves(hexList, hex, bugType, activePlayer) {
+	static beeMoves(hexList, hex, bugType, activePlayer, turn) {
 		let moves = [];
 
 		Hex.forEachVisitableNeighbor(hexList, hex, (neighbor) => {
@@ -203,6 +208,7 @@ class Hex {
 					bug: bugType,
 					type: 'move',
 					from: hex,
+					turn,
 					to: neighbor,
 					player: activePlayer
 				})
@@ -210,7 +216,7 @@ class Hex {
 		return moves;
 	}
 
-	static beetleMoves(hexList, hex, bugType, activePlayer) {
+	static beetleMoves(hexList, hex, bugType, activePlayer, turn) {
 		let moves = [];
 
 		Hex.forEachVisitableNeighbor(hexList, hex, (neighbor) => {
@@ -218,6 +224,7 @@ class Hex {
 					bug: bugType,
 					type: 'move',
 					from: hex,
+					turn,
 					to: neighbor,
 					player: activePlayer
 				})
@@ -225,22 +232,22 @@ class Hex {
 		return moves;
 	}
 
-	static computeBugMoves(hexList, hex, bugType, activePlayer) {
+	static computeBugMoves(hexList, hex, bugType, activePlayer, turn) {
 
 		if (bugType == "🐝") {
-			return Hex.beeMoves(hexList, hex, bugType, activePlayer);
+			return Hex.beeMoves(hexList, hex, bugType, activePlayer, turn);
 
 		} else if(bugType == "🕷") {
-			return Hex.spiderMoves(hexList, hex, bugType, activePlayer);
+			return Hex.spiderMoves(hexList, hex, bugType, activePlayer, turn);
 
 		} else if(bugType == "🐜") {
-			return Hex.antMoves(hexList, hex, bugType, activePlayer);
+			return Hex.antMoves(hexList, hex, bugType, activePlayer, turn);
 			
 		} else if(bugType == "🐞") {
-			return Hex.beetleMoves(hexList, hex, bugType, activePlayer);
+			return Hex.beetleMoves(hexList, hex, bugType, activePlayer, turn);
 			
 		} else if(bugType == "🦗") {
-			return Hex.grasshopperMoves(hexList, hex, bugType, activePlayer);
+			return Hex.grasshopperMoves(hexList, hex, bugType, activePlayer, turn);
 			
 		}
 	}

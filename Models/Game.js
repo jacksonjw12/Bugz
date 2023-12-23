@@ -113,15 +113,14 @@ class Game {
 				return;
 			}
 
-			if(Hex.isChainLink(this.hexes, hex)) {
+			const bug = hex.bugs[hex.bugs.length-1].bug;
+
+			if(hex.bugs.length == 1 && Hex.isChainLink(this.hexes, hex)) {
 				return;
 			}
 
-			const bug = hex.bugs[hex.bugs.length-1].bug;
 
-			moves = moves.concat(Hex.computeBugMoves(this.hexes, hex, bug, this.activePlayer));
-
-			// 
+			moves = moves.concat(Hex.computeBugMoves(this.hexes, hex, bug, this.activePlayer, this.turn));
 
 
 
@@ -164,6 +163,7 @@ class Game {
 						bug: bug,
 						type: 'add',
 						to: hex,
+						turn: this.turn,
 						player: this.activePlayer
 					})
 				
@@ -191,6 +191,7 @@ class Game {
 					moves.push({
 						bug: bug,
 						type: 'add',
+						turn: this.turn,
 						to: {x:0, y:0},
 						player: this.activePlayer
 					})
@@ -214,6 +215,7 @@ class Game {
 								moves.push({
 									bug: bug,
 									type: 'add',
+									turn: this.turn,
 									to: hex,
 									player: this.activePlayer
 								})
@@ -274,6 +276,9 @@ class Game {
 
 
 	validateNextMove(move) {
+		if(this.turn != move.turn) {
+			return false;
+		}
 		return true;
 	}
 
@@ -287,66 +292,65 @@ class Game {
 	}
 
 	applyNextMove(move) {
-		if(this.validateNextMove(move)) {
-			//todo - actually apply the move
-			console.log('move is gonna be');
-			console.log(move);
-			if(move.type == 'add') {
-				let targetHex = Hex.find(this.hexes, move.to);
-				if(!targetHex) {
-					console.log("Could not find targetHex, yikes");
-					return;
-					
-				}
-				targetHex.bugs.push({bug: move.bug, owner: this.activePlayer});
-
-				this.bugs[this.activePlayer][move.bug]--;
-
-				this.ensureNeighborsExist(targetHex);
-			}
-			else {
-
-				let destinationHex = Hex.find(this.hexes, move.to);
-				let originHex = Hex.find(this.hexes, move.from);
-				if(!destinationHex || !originHex) {
-					console.log("Could not find destinationHex or originHex, yikes");
-					return;
-				}
-
-				console.log("originHex", originHex);
-				const bug = originHex.bugs.splice(originHex.bugs.length-1, 1)[0];
-
-				destinationHex.bugs.push(bug);
-
-				console.log("destination", destinationHex);
-
-				this.ensureNeighborsExist(destinationHex);
-
-			}
-
-			const loser = Hex.checkLoseCondition(this.hexes);
-			if(loser != undefined) {
-
-				this.loser = loser;
-				for(let p = 0; p < this.playerIds.length; p++) {
-					if(this.playerIds[p] != loser) {
-						this.winner = this.playerIds[p];
-						break;
-					}
-				}
-				this.finished = true;
-
-				this.room.endGame(this.winner,this.loser);
-
+		if(!this.validateNextMove(move)) { 
+			return;
+		}
+		//todo - actually apply the move
+		console.log('move is gonna be');
+		console.log(move);
+		if(move.type == 'add') {
+			let targetHex = Hex.find(this.hexes, move.to);
+			if(!targetHex) {
+				console.log("Could not find targetHex, yikes");
+				return;
 				
 			}
-			else {
-				this.nextTurn();
+			targetHex.bugs.push({bug: move.bug, owner: this.activePlayer});
+
+			this.bugs[this.activePlayer][move.bug]--;
+
+			this.ensureNeighborsExist(targetHex);
+		}
+		else {
+
+			let destinationHex = Hex.find(this.hexes, move.to);
+			let originHex = Hex.find(this.hexes, move.from);
+			if(!destinationHex || !originHex) {
+				console.log("Could not find destinationHex or originHex, yikes");
+				return;
 			}
 
+			console.log("originHex", originHex);
+			const bug = originHex.bugs.splice(originHex.bugs.length-1, 1)[0];
+
+			destinationHex.bugs.push(bug);
+
+			console.log("destination", destinationHex);
+
+			this.ensureNeighborsExist(destinationHex);
+
+		}
+
+		const loser = Hex.checkLoseCondition(this.hexes);
+		if(loser != undefined) {
+
+			this.loser = loser;
+			for(let p = 0; p < this.playerIds.length; p++) {
+				if(this.playerIds[p] != loser) {
+					this.winner = this.playerIds[p];
+					break;
+				}
+			}
+			this.finished = true;
+
+			this.room.endGame(this.winner,this.loser);
 
 			
 		}
+		else {
+			this.nextTurn();
+		}
+
 		
 	}
 	nextTurn() {
