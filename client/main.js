@@ -106,7 +106,7 @@ window.onload = function(){
 		
 
 
-	}, {passive: false});
+	},);
 	canvas.el.addEventListener("touchstart", (event) => {
 		if(event.touches.length != 1) {
 			return;
@@ -128,7 +128,7 @@ window.onload = function(){
 		event.stopImmediatePropagation();
 		
 
-	}, {passive: false});
+	});
 	canvas.el.addEventListener("touchend", (event) => {
 		// if(event.touches.length != 1) {
 		// 	return;
@@ -158,7 +158,7 @@ window.onload = function(){
 		event.preventDefault();
 		event.stopImmediatePropagation();
 		
-	}, {passive: false});
+	});
 
 
 
